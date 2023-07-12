@@ -1,0 +1,179 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+
+@import url("https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css");
+
+.theater-body {
+	font-family: "Montserrat";
+	min-height: 80vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+    background-color: #242333;
+    color: #fff;
+    margin: 0;
+    padding-bottom: 20px;
+}
+
+
+/* * {
+	font-family: "Montserrat", sans-serif !important;
+    box-sizing: border-box;
+} */
+
+
+.movie-container {
+  margin: 20px 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column
+}
+
+.movie-container select {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  padding: 5px 15px;
+  margin-bottom: 40px;
+  font-size: 14px;
+  border-radius: 5px;
+}
+
+.container {
+  perspective: 1000px;
+  /* margin: 40px 0; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.seat {
+  height: 24px;
+  width: 30px;
+  margin: 6px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.normal {
+    background-color: #444451;
+}
+
+.premium {
+    background-color: #515144;
+}
+
+.selected {
+  background-color: #0081cb;
+}
+
+.occupied {
+  background-color: #fff;
+}
+
+/* .seat:nth-of-type(2) {
+  margin-right: 18px;
+}
+
+.seat:nth-last-of-type(2) {
+  margin-left: 18px;
+} */
+
+.seat:not(.occupied):hover {
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+.showcase .seat:not(.occupied):hover {
+  cursor: default;
+  transform: scale(1);
+}
+
+.showcase {
+  display: flex;
+  justify-content: space-between;
+  list-style-type: none;
+  background: rgba(0,0,0,0.1);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #777;
+}
+
+.showcase li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+}
+
+.showcase li small {
+  margin-left: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.screen {
+  background: #fff;
+  height: 90px;
+  width: 85%;
+  margin: 30px 0 50px;
+  transform: rotateX(-45deg);
+  box-shadow: 0 3px 10px rgba(255,255,255,0.7);
+}
+
+p.text {
+  line-height: 300%;
+  margin: 20px 0;
+}
+
+p.text span {
+  color: #0081cb;
+  font-weight: bolder;
+  box-sizing: content-box;
+}
+
+p.movie-name {
+    font-size: xx-large;
+    font-weight: bolder;
+    line-height: 150%;
+}
+
+p.head {
+    font-size: large;
+    font-weight: bold;
+    line-height: 150%;
+}
+
+
+.credits a {
+  color: #fff;
+}
+
+.confirm-btn-booking {
+    margin: 50px 0 0 0;
+    display: flex;
+    align-items: right;
+	justify-content: right;
+}
+
+p.order-booking {
+    display: flex;
+    justify-content: space-between;
+}
+
+p.order-detail-booking {
+    display: flex;
+    justify-content: space-between;
+}
+
+p.order-booking span {
+    font-weight: bold;
+}
+
