@@ -1,15 +1,16 @@
-import { Cascader, Button, Modal, Result, Input, Select } from 'antd';
+import { Card, Button, Modal, Result, Input, Select } from 'antd';
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 import { useQuery, gql, useMutation } from '@apollo/client';
 
 import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
-import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
+import { MenuBar, AppHeader, AppFooter } from '@/src/components/components';
 import { SUCCESS, FAILED } from '@/src/constants/configTheater/editTheater';
+import { allGenre } from '@/src/constants/movieGenres';
 
 const GET_MOVIE_BY_ID = gql`
-  query GetMovieByID($input: String) {
+  query GetMovieByID($input: GetMovieByIDInput) {
     getMovieByID(input: $input) {
       movie_name
       description
@@ -61,11 +62,10 @@ export default function editmovie({token}) {
     const [isStatusMordelOpen, setIsStatusModalOpen] = useState(false)
     const [statusBox, setStatusBox] = useState({})
 
-    const {data: data_movie, data: loading_movie, error: error_movie, refetch: refetch_movie} = useQuery(GET_MOVIE_BY_ID,{
-      variables: {
-        input: {
-          _movieID: router.query._movieID
-        }
+    const {data: data_movie, loading: loading_movie, error: error_movie, refetch: refetch_movie} = useQuery(GET_MOVIE_BY_ID,{
+      variables: { input: { _movieID: router.query._movieID } },
+      onCompleted: () => {
+        console.log('query completed')
       }
     })
 
@@ -73,19 +73,21 @@ export default function editmovie({token}) {
     useEffect(() => {
       if (data_movie) {
         if(data_movie.getMovieByID){
-          setMovieName(data_movie.getMovieByID.data.theater_name)
-          setDescription(data_movie.getMovieByID.data.description)
-          setGenres(data_movie.getMovieByID.data.genres)
-          setMovieDuration(data_movie.getMovieByID.data.movie_duration)
-          setMovieImage(data_movie.getMovieByID.data.movie_image)
+          console.log(data_movie.getMovieByID)
+          setMovieName(data_movie.getMovieByID.movie_name)
+          setDescription(data_movie.getMovieByID.description)
+          setGenres(data_movie.getMovieByID.genres)
+          setMovieDuration(data_movie.getMovieByID.movie_duration)
+          setMovieImage(data_movie.getMovieByID.movie_image)
         }
+        console.log('fetch completed')
       }
     }, [data_movie]);
 
     // refetch data everytime routing to this page
     useEffect(() => {
       const handleRouteChange = () => {
-        if (router.pathname === '/systemconfig/theater/editmovie'){
+        if (router.pathname === '/systemconfig/movie/editmovie'){
           refetch_movie()
         }
       }
@@ -93,6 +95,7 @@ export default function editmovie({token}) {
       return () => {
         router.events.off('routeChangeComplete', handleRouteChange)
       }
+
     }, [router.pathname, refetch_movie])
 
     const [editMovieByID, {data_e, loading_e, error_e}] = useMutation(EDIT_MOVIE_BY_ID, {
@@ -129,42 +132,43 @@ export default function editmovie({token}) {
       }
     })
 
+    const onClickConfirmEdit = () => {
+      setIsConfirmEditModalOpen(false)
+      editMovieByID({
+        variables: {
+          input: {
+            _movieID: router.query._movieID,
+            movie_name: movieName,
+            description: description,
+            genre: genres,
+            movie_duration: movieDuration,
+            movie_image: movieImage,
+          }
+        }
+      })
+    }
 
-    // const onClickConfirmEdit = () => {
-    //   setIsConfirmEditModalOpen(false)
-    //   editTheaterByID({
-    //     variables: {
-    //       input: {
-    //         _theaterID: router.query._theaterID,
-    //         theater_name: theaterName,
-    //         description: description
-    //       }
-    //     }
-    //   })
-    // }
+    const onClickConfirmDelete = () => {
+      setIsConfirmDeleteModalOpen(false)
+      deleteMovieByID({
+        variables: {
+          input: {
+            _movieID: router.query._movieID,
+          }
+        }
+      })
+    }
 
-    // const onClickConfirmDelete = () => {
-    //   setIsConfirmDeleteModalOpen(false)
-    //   deleteTheaterByID({
-    //     variables: {
-    //       input: {
-    //         _theaterID: router.query._theaterID,
-    //       }
-    //     }
-    //   })
-    // }
-
-    // const onOkStatusModal = () => {
-    //   setIsStatusModalOpen(false)
-    //   router.push('/systemconfig/movie')
-    // }
+    const onOkStatusModal = () => {
+      setIsStatusModalOpen(false)
+      router.push('/systemconfig/movie')
+    }
 
     return (
     <Container>
       <Layout>
         <AppHeader/>
         <MenuBar router={router} token={token}/>
-        
         <Content
           style={contentStyle} 
         >  
@@ -173,7 +177,23 @@ export default function editmovie({token}) {
         <strong style={{fontSize:"250%"}}>EDIT MOVIE</strong>
         <br/>   
         <h4>movie ID: {router.query._movieID}</h4>
-        <br/> 
+
+
+        {/* Movie Poster */}
+        <Card
+          key={movieImage}
+          hoverable
+          style={{
+            width: 200,
+            height: 380,
+            margin: "auto"
+          }}
+          cover={<img alt={movieImage} src={movieImage} height="250" />}
+        >
+          {(movieName !== '' && genres.length > 0) && (
+            <Card.Meta title={movieName} description={genres.reduce((str, genre) => {return str += ` ${genre}`})} />
+          )}
+        </Card>
         <br/> 
 
         {/* Edit Movie Name */}
@@ -181,10 +201,10 @@ export default function editmovie({token}) {
           <h2>Edit Movie Name</h2>
           <Input type='text' size='medium' placeholder={movieName}
             value={movieName}
-            onChange={(e) => {setTheaterName(e.target.value)}}  />
+            onChange={(e) => {setMovieName(e.target.value)}}  />
         </div>  
 
-        {/*  */}
+        {/* Edit Movie Description */}
         <div style={{width: '40%', margin: 'auto'}}>
           <h2>Edit Movie Description</h2>
           <Input.TextArea
@@ -200,64 +220,103 @@ export default function editmovie({token}) {
           />
         </div> 
 
-        {/* <Button 
+        {/* Edit Movie Genres */}
+        <div style={{width: '40%', margin: 'auto'}}>
+            <h2>Edit Movie Genres</h2>
+            <Select
+              mode="multiple"
+              allowClear
+              style={{
+                width: '100%',
+              }}
+              placeholder='Select Movie Genres'
+              
+              value={genres}
+              onChange={(value) => {setGenres(value)}}
+              options={allGenre.map((genre) => {return {label: genre, value: genre}})}
+            />
+        </div>
+        
+        {/* Edit Movie Duration */}
+        <div style={{width: '40%', margin: 'auto'}}>
+          <h2>Edit Movie Duration</h2>
+          <Input type='number' size='medium' placeholder={movieDuration}
+            value={movieDuration}
+            onChange={(e) => {setMovieDuration(e.target.value)}}  />
+        </div>  
+
+        {/* Edit Movie Image */}
+        <div style={{width: '40%', margin: 'auto'}}>
+          <h2>Edit Movie Image Link</h2>
+          <Input type='text' size='medium' placeholder={movieImage}
+            value={movieImage}
+            onChange={(e) => {setMovieImage(e.target.value)}}  />
+        </div>  
+        
+
+        <Button 
           onClick={() => setIsConfirmDeleteModalOpen(true)} type='primary' danger>
           DELETE  Movie
-        </Button> */}
+        </Button>
 
-        {/* <Button 
+        <Button 
           onClick={() => setIsConfirmEditModalOpen(true)} type='primary'>
           EDIT Movie
-        </Button> */}
+        </Button>
 
         {/* Confirm Modal */}
-        {/* <Modal centered title="" open={isConfirmEditModalOpen} onCancel={() => {setIsConfirmEditModalOpen(false)}} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
+        <Modal centered title="" open={isConfirmEditModalOpen} onCancel={() => {setIsConfirmEditModalOpen(false)}} 
+          okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 title={'Editing Confirm'}
-                subTitle={'Please confirm editing theatre with these detail'}
+                subTitle={'Please confirm editing movie with these detail'}
                 extra={
                   <div>
-                    <p>Theater ID: {router.query._theaterID}</p>
-                    <p>Theater Name: {theaterName}</p>
-                    <p>Theater Description: {description}</p>
+                    <p>Movie ID: {router.query._movieID}</p>
+                    <p>Name: {movieName}</p>
+                    <p>Description: {description}</p>
+                    {(genres.length > 0) && (
+                      <p>Genres: {genres.reduce((str, genre) => {return str += ', '+ genre})}</p>
+                    )}
+                    <p>Duration: {movieDuration}</p>
+                    <p>Image Link: {movieImage}</p>
                     <br/>
                     <Button onClick={() => {setIsConfirmEditModalOpen(false)}} >CANCLE</Button>
                     <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
                   </div>
                 }
             />
-        </Modal> */}
+        </Modal>
 
         {/* Delete Modal */}
-        {/* <Modal centered title="" open={isConfirmDeleteModalOpen}
+        <Modal centered title="" open={isConfirmDeleteModalOpen}
           onCancel={() => {setIsConfirmDeleteModalOpen(false)}} 
           okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 status='warning'
                 title='Deleting Confirm'
-                subTitle='Please confirm deleting theatre with these detail'
+                subTitle='Please confirm deleting movie with these detail'
                 extra={
                   <div>
-                    <p>Theater ID: {router.query._theaterID}</p>
-                    <p>Theater Name: {theaterName}</p>
-                    <p>Theater Description: {description}</p>
+                    <p>Movie ID: {router.query._movieID}</p>
+                    <p>Movie Name: {movieName}</p>
                     <br/>
                     <Button onClick={() => {setIsConfirmDeleteModalOpen(false)}} >CANCLE</Button>
                     <Button onClick={() => {onClickConfirmDelete()}} type='primary'>CONFIRM</Button>
                   </div>
                 }
             />
-        </Modal> */}
+        </Modal>
 
         {/* Editing Status Modal */}
-        {/* <Modal centered title="" open={isStatusMordelOpen} onOk={onOkStatusModal} 
+        <Modal centered title="" open={isStatusMordelOpen} onOk={onOkStatusModal} 
           onCancel={() => {setIsStatusModalOpen(false)}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 status={statusBox.status}
                 title={statusBox.title}
                 subTitle={statusBox.subTitle}
             />
-        </Modal> */}
+        </Modal>
 
         </Content>
       </Layout>
