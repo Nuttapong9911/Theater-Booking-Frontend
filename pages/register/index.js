@@ -20,7 +20,7 @@ const REGISTER = gql`
 `;
 
 export const getServerSideProps = ({ req, res }) => {
-  const token = getCookie('login',{ req, res })
+  const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
 
   return (token) ? 
       {

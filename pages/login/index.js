@@ -11,7 +11,7 @@ import { setCookie, getCookie } from 'cookies-next';
 import { useMutation, gql } from '@apollo/client';
 
 export const getServerSideProps = ({ req, res }) => {
-  const token = getCookie('login',{ req, res })
+  const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
 
   return (token) ? 
       {
@@ -64,7 +64,7 @@ export default function login({token}) {
           }
         )
         setIsModalOpen(true)
-        setCookie('login' ,data?.login.token, {maxAge: 120 * 60})
+        setCookie('THEATER_SEAT_BOOKING_COOKIE' ,data?.login.token, {maxAge: 120 * 60})
       }
     })
 

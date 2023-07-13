@@ -65,7 +65,7 @@ const EDIT_SHOWTIME_BY_ID = gql`
 `
 
 export const getServerSideProps = ({ req, res }) => {
-  const token = getCookie('login',{ req, res })
+  const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
   return (token) ? 
       {
         props: {token : JSON.parse(JSON.stringify(token))} 

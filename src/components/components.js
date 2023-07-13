@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import {Header, headerStyle, Footer} from '../styles/components'
-import { menus, loginregister } from '../constants/menubar'
-import { SUCCESS, FAILED } from '../constants/logout';
 import { Menu, Modal, Result} from 'antd';
 import { deleteCookie } from 'cookies-next';
-
 import { useDispatch, useSelector } from 'react-redux'
-
 import { useQuery, gql } from '@apollo/client';
+
+import {Header, headerStyle, Footer} from '../styles/components'
+import { menus, loginregister, adminMenus } from '../constants/menubar'
+import { SUCCESS, FAILED } from '../constants/logout';
 
 const DECODE_TOKEN = gql`
   query Query($token: String) {
@@ -15,6 +14,7 @@ const DECODE_TOKEN = gql`
       user_id
       firstname
       lastname
+      role
     }
   }
 `;
@@ -34,18 +34,15 @@ const MenuBar = (props) => {
           storeToken({
             user_id: data.decodeToken.user_id, 
             firstname: data.decodeToken.firstname, 
-            lastname: data.decodeToken.lastname
+            lastname: data.decodeToken.lastname,
+            role: data.decodeToken.role
           })
         }
+        console.log(props)
       }
     })
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [statusBox, setStatusBox] = useState({
-      status: "",
-      title: "",
-      subtitle: ""
-    })
   
     const menuOnClick = (e) => {
       router.push(e.key)
@@ -59,7 +56,7 @@ const MenuBar = (props) => {
 
     const handleOk = (e) => {
       setIsModalOpen(false);
-      deleteCookie('login')
+      deleteCookie('THEATER_SEAT_BOOKING_COOKIE')
       router.reload()
     };
 
@@ -80,22 +77,40 @@ const MenuBar = (props) => {
 
           { (data?.decodeToken) ? 
             (
+            
             <div style={{display: 'flex', justifyContent:'space-between'}}>
-              <Menu
-                theme="light"
-                mode="horizontal"
-                defaultSelectedKeys={[thisMenu]}
-                items={menus}
-                style={{width: "80%"}}
-                onClick={menuOnClick}
+              
+              {
+                (data.decodeToken.role === 'customer') ? 
+                (
+                <Menu
+                  theme="light"
+                  mode="horizontal"
+                  defaultSelectedKeys={[thisMenu]}
+                  items={menus}
+                  style={{width: "80vw"}}
+                  onClick={menuOnClick}
                 />
+                ):
+                (
+                <Menu
+                  theme="light"
+                  mode="horizontal"
+                  defaultSelectedKeys={[thisMenu]}
+                  items={adminMenus}
+                  style={{width: "80vw"}}
+                  onClick={menuOnClick}
+                />
+                )
+              }
+              
 
               <Menu
                 theme="light"
                 mode="horizontal"
                 defaultSelectedKeys={["user"]}
                 items={[{key: "user", label: `Hello ${data.decodeToken.firstname} ${data.decodeToken.lastname}`}, {key: "logout", label: "LOGOUT"}]}
-                style={{width: "20%"}} 
+                style={{width: "20vw"}} 
                 onClick={onClickLogout}
                 />
             </div>

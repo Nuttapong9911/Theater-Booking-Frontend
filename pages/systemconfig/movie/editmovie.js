@@ -8,6 +8,7 @@ import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, Custom
 import { MenuBar, AppHeader, AppFooter } from '@/src/components/components';
 import { SUCCESS, FAILED } from '@/src/constants/configTheater/editTheater';
 import { allGenre } from '@/src/constants/movieGenres';
+import withAuth from '@/src/middleware';
 
 const GET_MOVIE_BY_ID = gql`
   query GetMovieByID($input: GetMovieByIDInput) {
@@ -40,7 +41,7 @@ const DELETE_MOVIE_BY_ID = gql`
 `
 
 export const getServerSideProps = ({ req, res }) => {
-  const token = getCookie('login',{ req, res })
+  const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
   return (token) ? 
       {
         props: {token : JSON.parse(JSON.stringify(token))} 
@@ -48,7 +49,7 @@ export const getServerSideProps = ({ req, res }) => {
       { props: {}}
 };
 
-export default function editmovie({token}) {
+function editmovie({token}) {
     const router = useRouter()
 
     const [ movieName, setMovieName ] = useState('')
@@ -80,7 +81,6 @@ export default function editmovie({token}) {
           setMovieDuration(data_movie.getMovieByID.movie_duration)
           setMovieImage(data_movie.getMovieByID.movie_image)
         }
-        console.log('fetch completed')
       }
     }, [data_movie]);
 
@@ -325,3 +325,4 @@ export default function editmovie({token}) {
     )
 }
 
+export default withAuth(editmovie)
