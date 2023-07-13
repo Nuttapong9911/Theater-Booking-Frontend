@@ -7,7 +7,7 @@ import { useQuery, gql, useMutation } from '@apollo/client';
 import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { allGenre } from 'src/constants/movieGenres'
-import { SUCCESS, FAILED } from '@/src/constants/configMovie';
+import { SUCCESS, FAILED } from '@/src/constants/configMovie/addMovie';
 
 
 const CREATE_MOVIE = gql`

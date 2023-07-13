@@ -79,10 +79,6 @@ export default function buyticket() {
       setPickedShowIdx("")
     }
 
-    const onShowChange = (value) => {
-      setPickedShowIdx(value)
-    }
-
     const onClickConfirm = () => {
       console.log(showtimes[pickedShowIdx])
       router.push(`/buyticket/${showtimes[pickedShowIdx]._showID}`)
@@ -126,19 +122,19 @@ export default function buyticket() {
             />
         </div>
 
+        {/* Select Time and Theater */}
         <div>
           <h2>Select Time and Theater</h2>
-          <Cascader onChange={onShowChange} placeholder='select Time and Theater'  
+          <Cascader onChange={(value) => setPickedShowIdx(value)} placeholder='select Time and Theater'  
             value={pickedShowIdx}
             options={showtimes.map((showtime, index) => {
-              return {value: index, label: 
-                `${(showtime.datetime_start.split('T')[1]).split('.')[0]} - 
-                  ${(showtime.datetime_end.split('T')[1]).split('.')[0]}
+              return {value: index, label:
+                `${(new Date(showtime.datetime_start)).toLocaleTimeString('en-US', {hour12: false ,timeZone: 'Asia/Bangkok'})} - 
+                ${(new Date(showtime.datetime_end)).toLocaleTimeString('en-US', {hour12: false, timeZone: 'Asia/Bangkok'})}
                   ${showtime.theater_name}`}
               })}
             disabled={pickedMovie === ""}
           />
-        
         </div>
 
         <CustomButton disabled={pickedShowIdx === ""} 

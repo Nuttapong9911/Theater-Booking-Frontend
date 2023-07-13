@@ -107,6 +107,7 @@ export default function configShowtime() {
         <strong style={{fontSize:"250%"}}>SELECT SHOWTIME TO BE EDIT</strong>
         <br/>     
 
+        {/* Select Date */}
         <div>
             <h2>Select Date</h2>
             <Radio.Group onChange={onDateChange} defaultValue={pickedDateIdx}>
@@ -128,19 +129,19 @@ export default function configShowtime() {
             />
         </div>
 
+        {/* Select Time and Theater */}
         <div>
           <h2>Select Time and Theater</h2>
           <Cascader onChange={(value) => setPickedShowIdx(value)} placeholder='select Time and Theater'  
             value={pickedShowIdx}
             options={showtimes.map((showtime, index) => {
-              return {value: index, label: 
-                `${(new Date(showtime.datetime_start)).toLocaleString('en-US', {timeZone: 'Asia/Bangkok'}).split(' ')[1]} - 
-                ${(new Date(showtime.datetime_end)).toLocaleString('en-US', {timeZone: 'Asia/Bangkok'}).split(' ')[1]}
+              return {value: index, label:
+                `${(new Date(showtime.datetime_start)).toLocaleTimeString('en-US', {hour12: false ,timeZone: 'Asia/Bangkok'})} - 
+                ${(new Date(showtime.datetime_end)).toLocaleTimeString('en-US', {hour12: false, timeZone: 'Asia/Bangkok'})}
                   ${showtime.theater_name}`}
               })}
             disabled={pickedMovie === ""}
           />
-        
         </div>
 
         <Button style={{width:"20%"}}  

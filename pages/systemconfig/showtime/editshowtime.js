@@ -184,7 +184,6 @@ export default function editshowtime({token}) {
           datetime_end: `${pickedDate}, ${pickedTimeEnd} GMT+07:00`,
         }
       }})
-      // console.log(`${pickedDate}, ${pickedTimeEnd}`)
     }
 
     const onOkConfirmStatus = () => {
@@ -213,6 +212,7 @@ export default function editshowtime({token}) {
           <strong style={{fontSize:"250%"}}>SHOWTIME EDITING</strong>
           <br/>     
 
+          {/* Time Picker */}
           <div>
               <h2>Edit Date</h2>
               <Radio.Group onChange={(e) => setPickedDate(e.target.value)}>

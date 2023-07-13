@@ -1,5 +1,5 @@
 import { Button, Cascader } from 'antd';
-import { useQuery, gql, useLazyQuery } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import React, {useState, useEffect} from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
@@ -22,6 +22,7 @@ const GET_ALL_MOVIE = gql`
     }
   }
 `
+
 export const getServerSideProps = ({ req, res }) => {
   const token = getCookie('login',{ req, res })
   return (token) ? 
@@ -61,6 +62,14 @@ export default function configMovie({token}) {
       }
     }, [router.pathname, refetch])
 
+    const onClickConfirm = () => {
+      if(pickedMovieID !== ""){
+        router.push({
+          pathname: `/systemconfig/movie/editmovie`, 
+          query: {_movieID: pickedMovieID}
+        })
+      }
+    }
 
     return (
     <Container>
@@ -89,13 +98,12 @@ export default function configMovie({token}) {
           CREATE NEW MOVIE
         </Button>
 
-        <Button style={{width:"20%"}} disabled={true} 
+        <Button style={{width:"20%"}} disabled={pickedMovieID === ""} 
           type='primary'
-          >
+          onClick={onClickConfirm}>
           CONFIRM
         </Button>
 
-          
         </Content>
       </Layout>
       <AppFooter/>

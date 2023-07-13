@@ -1,4 +1,4 @@
-import { Radio, Cascader, Button, TimePicker, Modal, Result } from 'antd';
+import { Radio, Cascader, Button, TimePicker, Modal, Result, message } from 'antd';
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
@@ -55,6 +55,7 @@ export const getServerSideProps = ({ req, res }) => {
 
 export default function addShowtime({token}) {
     const router = useRouter()
+    const [messageApi, contextHolder] = message.useMessage();
 
     const [movieNames, setMovienames] = useState([])
     const [theaterNames, setTheaterNames] = useState([])
@@ -140,6 +141,19 @@ export default function addShowtime({token}) {
       }
     }
 
+    const onChangeTimeStart = (e) => {
+      if(e['$H'] < 8 || e['$H'] > 20){
+        messageApi.open({
+          type: 'warning',
+          content: 'Showtime must start between 8:00 - 20:00. :(',
+        });
+        setPickedTimeStart(pickedTimeStart || "")
+      }else{
+        setPickedTimeStart(e)
+      }
+    }
+
+
     return (
     <Container>
       <Layout>
@@ -154,6 +168,7 @@ export default function addShowtime({token}) {
         <strong style={{fontSize:"250%"}}>CREATE NEW SHOWTIME</strong>
         <br/>   
 
+        {/* Select Movie */}
         <div>
           <h2>Select Movie</h2>
             <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
@@ -162,6 +177,7 @@ export default function addShowtime({token}) {
             />
         </div>
 
+        {/* Select Theater */}
         <div>
           <h2>Select Theater</h2>
             <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Theater' 
@@ -170,6 +186,7 @@ export default function addShowtime({token}) {
             />
         </div>
 
+        {/* Select Date */}
         <div>
           <h2>Select Date</h2>
           <Radio.Group onChange={(e) => setPickedDateIdx(e.target.value)} >
@@ -183,10 +200,12 @@ export default function addShowtime({token}) {
           </Radio.Group>
         </div> 
         
+        {/* Select Time */}
         <div style={{display: 'flex' ,justifyContent: 'center'}}>
+          {contextHolder}
           <div style={{margin: '0 15px'}}>
             <h3>Select Time Start</h3>
-            <TimePicker format={'HH:mm'} value={pickedTimeStart} onChange={(e) => setPickedTimeStart(e)}/>
+            <TimePicker format={'HH:mm'} value={pickedTimeStart} onChange={onChangeTimeStart}/>
           </div>
 
           <div style={{margin: '0 15px'}}>
