@@ -178,7 +178,6 @@ function editmovie({token}) {
         <br/>   
         <h4>movie ID: {router.query._movieID}</h4>
 
-
         {/* Movie Poster */}
         <Card
           key={movieImage}

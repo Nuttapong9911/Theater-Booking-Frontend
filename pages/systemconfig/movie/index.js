@@ -7,6 +7,7 @@ import { getCookie } from 'cookies-next';
 import {Layout, Header, Content, headerStyle, 
   contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
+import withAuth from '@/src/middleware';
 
 const GET_ALL_MOVIE = gql`
   query GetAllMovie {
@@ -33,7 +34,7 @@ export const getServerSideProps = ({ req, res }) => {
       { props: {}}
 };
 
-export default function configMovie({token}) {
+function configMovie({token}) {
     const router = useRouter()
 
     const [pickedMovieID, setPickedMovieID] = useState("")      //name
@@ -76,7 +77,7 @@ export default function configMovie({token}) {
     <Container>
       <Layout>
         <AppHeader/>
-        <MenuBar router={router} token={{token}}/>
+        <MenuBar router={router} token={token}/>
         
         <Content
           style={contentStyle}
@@ -86,6 +87,7 @@ export default function configMovie({token}) {
         <strong style={{fontSize:"250%"}}>SELECT MOVIE TO BE EDIT</strong>
         <br/>  
 
+        {/* Select Movie */}
         <div>
           <h2>Select Movie</h2>
           <Cascader onChange={(value) => setPickedMovieID(value[0])} placeholder='select movie' 
@@ -112,3 +114,4 @@ export default function configMovie({token}) {
     )
 }
 
+export default withAuth(configMovie)

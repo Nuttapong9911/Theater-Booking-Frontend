@@ -8,6 +8,7 @@ import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, Custom
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { allGenre } from 'src/constants/movieGenres'
 import { SUCCESS, FAILED } from '@/src/constants/configMovie/addMovie';
+import withAuth from '@/src/middleware';
 
 
 const CREATE_MOVIE = gql`
@@ -28,7 +29,7 @@ export const getServerSideProps = ({ req, res }) => {
       { props: {}}
 };
 
-export default function addmovie({token}) {
+function addmovie({token}) {
     const router = useRouter()
 
     const [movieName, setMovieName] = useState('')
@@ -87,13 +88,14 @@ export default function addmovie({token}) {
         <strong style={{fontSize:"250%"}}>CREATE NEW MOVIE</strong>
         <br/>   
 
+        {/* Input Movie Name */}
         <div style={{width: '40%', margin: 'auto'}}>
           <h2>Movie Name</h2>
           <Input value={movieName} type='text' size='medium' placeholder='movie name' onChange={(e) => {setMovieName(e.target.value)}}  />
         </div>
 
         
-
+        {/* Input Movie Genre */}
         <div style={{width: '40%', margin: 'auto'}}>
           <h2>Movie Genre</h2>
             <Select
@@ -109,18 +111,21 @@ export default function addmovie({token}) {
           />
         </div>
 
+        {/* Input Movie Image */}
         <div style={{width: '40%', margin: 'auto'}}>
           <h2>Movie Image</h2>
           <Input value={movieImg} type='text' size='medium' placeholder='movie image' 
             onChange={(e) => {setMovieImg(e.target.value)}}  />
         </div>
 
+        {/* Input Movie Duration */}
         <div style={{width: '40%', margin: 'auto'}}>
           <h2>Movie Duration</h2>
           <Input value={movieDuration} type='number' size='medium' placeholder='movie duration' 
              onChange={(e) => {setMovieDuration(e.target.value)}}  />
         </div>
 
+        {/* Input Movie Status */}
         <div>
           <h2>Movie Status</h2>
           <Cascader value={movieStatus} type='text' placeholder='movie name' 
@@ -129,6 +134,7 @@ export default function addmovie({token}) {
             />
         </div>
 
+        {/* Input Movie Description */}
         <div style={{width: '40%', margin: 'auto'}}>
           <h2>Movie Description</h2>
           <Input.TextArea
@@ -144,11 +150,13 @@ export default function addmovie({token}) {
           />
         </div>
 
+        {/* Button Create New Movie */}
         <Button disabled={movieName === '' || movieGenre.length <= 0} 
           onClick={() => setIsConfirmModalOpen(true)} type='primary'>
           CREATE NEW MOVIE
         </Button>
 
+        {/* Confirm Modal */}
         <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 title={'Creating Confirm'}
@@ -169,7 +177,7 @@ export default function addmovie({token}) {
             />
         </Modal>
 
-        
+        {/* Status Modal */}
         <Modal centered title="" open={isStatusMordelOpen} onOk={() => {setIsStatusModalOpen(false)}} onCancel={() => {setIsStatusModalOpen(false)}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 status={statusBox.status}
@@ -196,3 +204,4 @@ export default function addmovie({token}) {
     )
 }
 
+export default withAuth(addmovie)

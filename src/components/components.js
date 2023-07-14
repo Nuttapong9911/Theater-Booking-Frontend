@@ -38,7 +38,6 @@ const MenuBar = (props) => {
             role: data.decodeToken.role
           })
         }
-        console.log(props)
       }
     })
 
