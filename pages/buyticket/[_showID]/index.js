@@ -99,7 +99,6 @@ export default function selectticket({token}) {
 
     const [createTicket, {data: data_create, loading: loading_create, error: error_create}] = useMutation(CREATE_TICKET, {
       onCompleted: (data) => {
-        console.log(data.createTicket)
         setStatusBox(data?.createTicket.httpCode === '200' ? 
           {
             status: SUCCESS.STATUS,
