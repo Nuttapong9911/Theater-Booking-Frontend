@@ -99,6 +99,7 @@ export default function selectticket({token}) {
 
     const [createTicket, {data: data_create, loading: loading_create, error: error_create}] = useMutation(CREATE_TICKET, {
       onCompleted: (data) => {
+        console.log(data.createTicket)
         setStatusBox(data?.createTicket.httpCode === '200' ? 
           {
             status: SUCCESS.STATUS,
@@ -384,7 +385,7 @@ export default function selectticket({token}) {
         </Modal>
 
         {/* Booking Status Modal */}
-        <Modal centered title="" open={isStatusMordelOpen} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
+        <Modal centered title="" open={isStatusMordelOpen} onCancel={onClickStatusMordalContinue} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           {
             (statusBox.status === 'success') ? 
             (
