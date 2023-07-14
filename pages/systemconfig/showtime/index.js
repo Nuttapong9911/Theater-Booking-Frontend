@@ -1,13 +1,13 @@
 import { Radio, Cascader, Button } from 'antd';
+import React, {useEffect, useState} from 'react'
+import { useRouter } from 'next/router'
+import { getCookie } from 'cookies-next';
+import { useQuery, gql, useLazyQuery } from '@apollo/client';
+
 import {Layout, Header, Content, headerStyle, 
   contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { dayOfWeeks, months } from 'src/constants/datepicker';
-
-import React, {useEffect, useState} from 'react'
-import { useRouter } from 'next/router'
-
-import { useQuery, gql, useLazyQuery } from '@apollo/client';
 
 const GET_SHOW_BY_DATE = gql`
   query GetShowtimeByDate($input: SearchInput) {
@@ -26,7 +26,17 @@ const GET_SHOW_BY_DATE = gql`
 }
 `;
 
-export default function configShowtime() {
+export const getServerSideProps = ({ req, res }) => {
+  const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
+  console.log(token, 'serversideprops form movie/index')
+  return (token) ? 
+      {
+        props: {token : JSON.parse(JSON.stringify(token))} 
+      }:
+      { props: {}}
+};
+
+export default function configShowtime({token}) {
     const router = useRouter()
     const [getShowByDate ,{data, loading, error}] = useLazyQuery(GET_SHOW_BY_DATE)
 
@@ -98,7 +108,7 @@ export default function configShowtime() {
     <Container>
       <Layout>
         <AppHeader/>
-        <MenuBar router={router} />
+        <MenuBar router={router} token={token} />
         
         <Content
           style={contentStyle}

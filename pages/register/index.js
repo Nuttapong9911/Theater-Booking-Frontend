@@ -112,10 +112,6 @@ export default function register({token}) {
         <Content
           style={contentStyle}
         >     
-        <br/>
-        <strong style={{fontSize:"250%"}}>REGISTER</strong>
-        <br/>
-
         <Modal centered title="" open={isModalOpen} onOk={handleOk} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
             status={statusBox.status}
