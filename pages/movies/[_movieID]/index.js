@@ -3,14 +3,14 @@ import {Layout, Header, Content, headerStyle,
   contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 
 import { useQuery, gql } from '@apollo/client';
 
 const GET_MOVIE_BY_ID = gql`
-  query GetMovieByID($input: String) {
+  query GetMovieByID($input: GetMovieByIDInput) {
     getMovieByID(input: $input) {
       _movieID
       movie_name
@@ -34,9 +34,19 @@ export const getServerSideProps = ({ req, res }) => {
 export default function movieDetail({token}) {
   const router = useRouter()
 
+  const [ movie, setMovie ] = useState({})
+
   const {data, loading, error, refetch} = useQuery(GET_MOVIE_BY_ID, {
-    variables: {input: router.query._movieID}
+    variables: {input: {_movieID: router.query._movieID}}
   })
+
+  // store fetched data
+  useEffect(() => {
+    if (data) {
+      setMovie(data.getMovieByID)
+    }
+  }, [data]);
+
 
   // refetch data everytime routing to this page
   useEffect(() => {
@@ -70,7 +80,7 @@ export default function movieDetail({token}) {
 
         <Space>
           {
-            (!data.getMovieByID.movie_image) ?
+            (!movie.movie_image) ?
             (
               <Image
                 width={300}
@@ -84,19 +94,23 @@ export default function movieDetail({token}) {
               <Image
                 width={400}
                 height={500}
-                src={data.getMovieByID.movie_image}
+                src={movie.movie_image}
               />
             )
           }
           <div>
-            <h2>moviename: {data.getMovieByID.movie_name}</h2>
-            <p>_movieID: {router.query._movieID}</p>
-            <p>duration: {data.getMovieByID.movie_duration}</p>
-            <p>description: {data.getMovieByID.description}</p>
-            <p>Genres: {
-              data.getMovieByID.genres.reduce((str, genre) => {return str += ` ${genre}`})
-            }</p>
-        </div> 
+              <h2>moviename: {movie.movie_name}</h2>
+              <p>_movieID: {router.query._movieID}</p>
+              <p>duration: {movie.movie_duration}</p>
+              <p>description: {movie.description}</p>
+              <p>Genres: {
+                (movie.genres) && (
+                  movie.genres.reduce((str, genre) => {return str += ` ${genre}`})
+                )
+              }
+              </p>
+          </div> 
+          
         </Space>
 
         
