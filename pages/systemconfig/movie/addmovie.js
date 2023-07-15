@@ -74,6 +74,11 @@ function addmovie({token}) {
       }})
     }
 
+    const onOkStatusModal = () => {
+      setIsStatusModalOpen(false)
+      router.push('systemconfig/movie')
+    }
+
     return (
     <Container>
       <Layout>
@@ -178,22 +183,11 @@ function addmovie({token}) {
         </Modal>
 
         {/* Status Modal */}
-        <Modal centered title="" open={isStatusMordelOpen} onOk={() => {setIsStatusModalOpen(false)}} onCancel={() => {setIsStatusModalOpen(false)}} cancelButtonProps={{style: { display: 'none' }}} >
+        <Modal centered title="" open={isStatusMordelOpen} onOk={onOkStatusModal} onCancel={onOkStatusModal} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 status={statusBox.status}
                 title={statusBox.title}
                 subTitle={statusBox.subTitle}
-                extra={
-                  <div>
-                    <p>Movie Name: {movieName}</p>
-                    <p>Movie Genres: {`${movieGenre.length > 0 ? movieGenre?.reduce((str, genre) => {return str += ' ' + genre}) : ''}`}</p>
-                    <p>Movie Status: {movieStatus}</p>
-                    <p>Movie Image: {movieImg}</p>
-                    <p>Movie Description: {movieDescription}</p>
-                    <p>Movie Duration: {movieDuration}</p>
-                    <br/>
-                  </div>
-                }
             />
         </Modal>
 
