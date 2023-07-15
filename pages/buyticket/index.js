@@ -53,14 +53,10 @@ export default function buyticket() {
     }
     
     const onDateChange = (e) => {
-      // console.log(e.target.value)
       setPickedDateIdx(e.target.value)
       getShowByDate({
         variables: {input: {date_search: (week[e.target.value].dateObj.toString())}},
         onCompleted: (data) => {
-          // console.log(`search on ${week[e.target.value].dateObj}`)
-          // console.log(data.getShowtimeByDate.showtimes)
-          // console.log(data.getShowtimeByDate.movienames)
           setAllShowtimes(data.getShowtimeByDate.showtimes)
           setMovienames(data.getShowtimeByDate.movienames)
           setPickedMovie("")
@@ -80,13 +76,8 @@ export default function buyticket() {
     }
 
     const onClickConfirm = () => {
-      console.log(showtimes[pickedShowIdx])
       router.push(`/buyticket/${showtimes[pickedShowIdx]._showID}`)
     }
-
-    // if (data) console.log(data)
-    // if (loading) return <div>Loading...</div>;
-    // if (error) return `Error! ${error.message}`;
 
     return (
     <Container>

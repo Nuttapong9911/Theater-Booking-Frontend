@@ -1,8 +1,7 @@
-import { Breadcrumb, Menu, theme, Card, Space } from 'antd';
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
+import { Card, Space } from 'antd';
+import {Layout, Content, contentStyle, Container} from 'src/styles/components'
 import { useRouter } from 'next/router';
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import { getCookie } from 'cookies-next';
 
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
@@ -52,15 +51,14 @@ const moviesPage = ({token}) => {
     }
   }, [router.pathname, refetch])
 
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return `Error! ${error.message}`;
-
   const { Meta } = Card;
 
   const onClickMovie = (e) => {
     router.push(`/movies/${e.target.alt}`)
   }
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return `Error! ${error}`;
   return (
     <Container>
       <Layout>
@@ -107,8 +105,8 @@ const moviesPage = ({token}) => {
 
       <AppFooter/>
     </Container>
-    
   );
+  
 };
 
 export default moviesPage;
