@@ -156,6 +156,8 @@ export default function edittheater({token}) {
       router.push('/systemconfig/theater')
     }
 
+    if (loading_theater) return <div>loading</div>
+    if (error_theater) return <div>error: {error_theater}</div>
     return (
     <Container>
       <Layout>

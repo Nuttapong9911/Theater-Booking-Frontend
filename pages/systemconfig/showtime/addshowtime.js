@@ -8,6 +8,7 @@ import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, Custom
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { dayOfWeeks, months } from 'src/constants/datepicker';
 import { SUCCESS, FAILED } from '@/src/constants/configShowtime/createShowtime';
+import withAuth from '@/src/middleware';
 
 const GET_ALL_MOVIE = gql`
   query GetAllMovie {
@@ -53,7 +54,7 @@ export const getServerSideProps = ({ req, res }) => {
       { props: {}}
 };
 
-export default function addShowtime({token}) {
+function addShowtime({token}) {
     const router = useRouter()
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -153,7 +154,8 @@ export default function addShowtime({token}) {
       }
     }
 
-
+    if(loading_movies || loading_theater) return <div>loading</div>
+    if(error_movies || error_theater) return <div>Error: {error_movies}, {error_theater}</div>
     return (
     <Container>
       <Layout>
@@ -214,11 +216,13 @@ export default function addShowtime({token}) {
           </div>
         </div>
 
+        {/* BUTTON CREATE NEW ST */}
         <Button onClick={() => {setIsConfirmModalOpen(true)}} 
           disabled={pickedDateIdx < 0 || pickedMovie === "" || pickedTheater === "" || 
             pickedTimeStart === "" || pickedTimeEnd === ""} > 
           CREATE NEW SHOWTIME</Button>
 
+        {/* CONFIRM MODAL */}
         <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 title={'Creating Confirm'}
@@ -237,19 +241,12 @@ export default function addShowtime({token}) {
             />
         </Modal>
         
+        {/* STATUE MODAL */}
         <Modal centered title="" open={isStatusMordelOpen} onOk={onOkConfirmStatus} onCancel={() => {setIsStatusModalOpen(false)}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 status={statusBox.status}
                 title={statusBox.title}
                 subTitle={statusBox.subTitle}
-                extra={
-                  <div>
-                    <p>Movie: {pickedMovie}</p>
-                    <p>Theater: {pickedTheater}</p>
-                    <p>Date: {week[pickedDateIdx]?.dateLabel}</p>
-                    <p>Time: {`${pickedTimeStart['$d']?.toString().split(' ')[4]} - ${pickedTimeEnd['$d']?.toString().split(' ')[4]}`}</p>
-                  </div>
-                }
             />
         </Modal>
         </Content>
@@ -259,3 +256,4 @@ export default function addShowtime({token}) {
     )
 }
 
+export default withAuth(addShowtime)

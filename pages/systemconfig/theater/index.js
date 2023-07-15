@@ -62,45 +62,47 @@ export default function configTheater({token}) {
       })
     }
 
+    if(loading) return <div>loading</div>
+    if(error) return <div>error: {error}</div>
     return (
-    <Container>
-      <Layout>
-        <AppHeader/>
-        <MenuBar router={router} token={token}/>
-        
-        <Content
-          style={contentStyle}
-        >     
-
-        <br/>
-        <strong style={{fontSize:"250%"}}>SELECT THEATER TO BE EDIT</strong>
-        <br/>  
-
-        <div>
-          <h2>Select Theater</h2>
-          <Cascader onChange={(value) => {setPickedTheaterID(value[0])}} placeholder='select movie' 
-            value={pickedTheaterID}
-            options={allTheater?.map(({_id, theater_name}) => {return {value: _id, label: theater_name}})}
-            />
-        </div>
-
-        <Button style={{width:"20%"}}  
-          onClick={() => {router.push(`/systemconfig/theater/addtheater`)}}>
-          CREATE NEW THEATER
-        </Button>
-
-        <Button style={{width:"20%"}} disabled={ pickedTheaterID === "" } 
-          onClick={onClickConfirm}
-          type='primary'
-          >
-          CONFIRM
-        </Button>
-
+      <Container>
+        <Layout>
+          <AppHeader/>
+          <MenuBar router={router} token={token}/>
           
-        </Content>
-      </Layout>
-      <AppFooter/>
-    </Container>
+          <Content
+            style={contentStyle}
+          >     
+
+          <br/>
+          <strong style={{fontSize:"250%"}}>SELECT THEATER TO BE EDIT</strong>
+          <br/>  
+
+          <div>
+            <h2>Select Theater</h2>
+            <Cascader onChange={(value) => {setPickedTheaterID(value[0])}} placeholder='select movie' 
+              value={pickedTheaterID}
+              options={allTheater?.map(({_id, theater_name}) => {return {value: _id, label: theater_name}})}
+              />
+          </div>
+
+          <Button style={{width:"20%"}}  
+            onClick={() => {router.push(`/systemconfig/theater/addtheater`)}}>
+            CREATE NEW THEATER
+          </Button>
+
+          <Button style={{width:"20%"}} disabled={ pickedTheaterID === "" } 
+            onClick={onClickConfirm}
+            type='primary'
+            >
+            CONFIRM
+          </Button>
+
+            
+          </Content>
+        </Layout>
+        <AppFooter/>
+      </Container>
     )
 }
 

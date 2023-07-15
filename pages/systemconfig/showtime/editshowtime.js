@@ -10,7 +10,7 @@ import {Layout, Header, Content, headerStyle,
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { dayOfWeeks, months } from 'src/constants/datepicker';
 import { SUCCESS, FAILED } from '@/src/constants/configShowtime/editShowtime';
-
+import withAuth from '@/src/middleware';
 
 const GET_SHOW_BY_ID = gql`
   query GetShowtimeByID($input: GetShowtimeByIDInput) {
@@ -73,7 +73,7 @@ export const getServerSideProps = ({ req, res }) => {
       { props: {}}
 };
 
-export default function editshowtime({token}) {
+function editshowtime({token}) {
     const router = useRouter()
 
     const [currentMovieName, setCurrentMovieName] = useState('')
@@ -104,6 +104,7 @@ export default function editshowtime({token}) {
         }
       }
     })
+
     const [editShowtime, {data: data_edit, loading: loading_edit, error: error_edit}] = useMutation(EDIT_SHOWTIME_BY_ID, {
       onCompleted: (data) => {
         setStatusBox(data?.editShowtimeByID.httpCode === '200' ? 
@@ -123,13 +124,13 @@ export default function editshowtime({token}) {
 
     // store fetched data
     useEffect(() => {
-      if (data_movies) {
+      if (data_movies?.getAllMovie) {
         setMovienames(data_movies.getAllMovie.data.map((movie) => {return movie.movie_name}))
       }
-      if (data_theaters) {
+      if (data_theaters?.getAllTheater) {
         setTheaterNames(data_theaters.getAllTheater.data.map((theater) => {return theater.theater_name}))
       }
-      if(data_show){
+      if(data_show?.getShowtimeByID){
         setCurrentMovieName(data_show.getShowtimeByID.showtime.movie_name)
         setCurrentTheaterName(data_show.getShowtimeByID.showtime.theater_name)
         const dateStart = new Date(data_show.getShowtimeByID.showtime.datetime_start)
@@ -193,133 +194,155 @@ export default function editshowtime({token}) {
       }
     }
 
-    return (
-    (loading_movies || loading_theaters || loading_show) ? (
-      <div>
-        loading
-      </div>
-    ):
-    (
-      <Container>
-        <Layout>
-          <AppHeader/>
-          <MenuBar router={router} token={token}/>
-          
-          <Content
-            style={contentStyle}
-          > 
-          <br/>
-          <strong style={{fontSize:"250%"}}>SHOWTIME EDITING</strong>
-          <br/>     
-
-          {/* Time Picker */}
-          <div>
-              <h2>Edit Date</h2>
-              <Radio.Group onChange={(e) => setPickedDate(e.target.value)}>
-                {
-                  week.map((day, index) => {
-                    return (day.dateLabel === currentDate) ? 
-                    (
-                      <Radio.Button key={index} value={day.dateLabel}><span style={{color: 'red'}}>{day.dateLabel} (default)</span></Radio.Button>
-                    ) : 
-                    (
-                      <Radio.Button key={index} value={day.dateLabel}>{day.dateLabel}</Radio.Button>
-                    )
-                  })
-                }
-              </Radio.Group>
-          </div> 
-
-          <div>
-            <h2>Edit Movie</h2>
-              <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
-                value={pickedMovie}
-                options={movieNames.map((moviename) => {
-                  if(moviename === currentMovieName){
-                    return {value: moviename, label: <span style={{color:'red'}}>{moviename} (default)</span>}
-                  }else{
-                    return {value: moviename, label: moviename}
-                  }
-                })}
-              />
-          </div>
-
-          <div>
-            <h2>Edit Theater</h2>
-              <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Movie' 
-                value={pickedTheater}
-                options={theaterNames.map((theatername) => {
-                  if(theatername === currentTheaterName){
-                    return {value: theatername, label: <span style={{color:'red'}}>{theatername} (default)</span>}
-                  }else{
-                    return {value: theatername, label: theatername}
-                  }
-                })}
-              />
-          </div>
-
-          {(pickedTimeStart && pickedTimeEnd) && 
-            (
-              <div style={{display: 'flex' ,justifyContent: 'center'}}>
-                <div style={{margin: '0 15px'}}>
-                  <h3>Select Time Start</h3>
-                  <TimePicker value={dayjs(`${pickedTimeStart}`, 'HH:mm:ss')} format={'HH:mm'} 
-                    onChange={(e) => {setPickedTimeStart((String(e['$d'])).split(' ')[4])
-                    }}/>
-                  <Button onClick={() => setPickedTimeStart(currentTimeStart.split(' ')[0])}>
-                    <span style={{color: 'red'}}>Default</span></Button>
+    if (loading_movies || loading_theaters || loading_show) {
+      return (
+        <div>
+          loading ...
+        </div>
+      )
+    }else if (error_movies || error_theaters || error_show) {
+      return (
+        <div>
+          <p>error_movie</p>
+          <p>error_theaters</p>
+          <p>error_show</p>
+        </div>
+      )
+    }else if (data_movies && data_theaters && data_show) {
+      return (
+        (
+          <Container>
+            <Layout>
+              <AppHeader/>
+              <MenuBar router={router} token={token}/>
+              
+              <Content
+                style={contentStyle}
+              > 
+              <br/>
+              <strong style={{fontSize:"250%"}}>SHOWTIME EDITING</strong>
+              <br/>     
+    
+              {/* Time Picker */}
+              <div>
+                  <h2>Edit Date</h2>
+                  <Radio.Group onChange={(e) => setPickedDate(e.target.value)}>
+                    {
+                      week.map((day, index) => {
+                        return (day.dateLabel === currentDate) ? 
+                        (
+                          <Radio.Button key={index} value={day.dateLabel}><span style={{color: 'red'}}>{day.dateLabel} (default)</span></Radio.Button>
+                        ) : 
+                        (
+                          <Radio.Button key={index} value={day.dateLabel}>{day.dateLabel}</Radio.Button>
+                        )
+                      })
+                    }
+                  </Radio.Group>
+              </div> 
+    
+              {/* Edit Movie */}
+              <div>
+                <h2>Edit Movie</h2>
+                  <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
+                    value={pickedMovie}
+                    options={movieNames.map((moviename) => {
+                      if(moviename === currentMovieName){
+                        return {value: moviename, label: <span style={{color:'red'}}>{moviename} (default)</span>}
+                      }else{
+                        return {value: moviename, label: moviename}
+                      }
+                    })}
+                  />
+              </div>
+    
+              {/* Edit Theater  */}
+              <div>
+                <h2>Edit Theater</h2>
+                  <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Movie' 
+                    value={pickedTheater}
+                    options={theaterNames.map((theatername) => {
+                      if(theatername === currentTheaterName){
+                        return {value: theatername, label: <span style={{color:'red'}}>{theatername} (default)</span>}
+                      }else{
+                        return {value: theatername, label: theatername}
+                      }
+                    })}
+                  />
+              </div>
+    
+              {/* Edit Time */}
+              {(pickedTimeStart && pickedTimeEnd) && 
+                (
+                  <div style={{display: 'flex' ,justifyContent: 'center'}}>
+                    <div style={{margin: '0 15px'}}>
+                      <h3>Select Time Start</h3>
+                      <TimePicker value={dayjs(`${pickedTimeStart}`, 'HH:mm:ss')} format={'HH:mm'} 
+                        onChange={(e) => {setPickedTimeStart((String(e['$d'])).split(' ')[4])
+                        }}/>
+                      <Button onClick={() => setPickedTimeStart(currentTimeStart.split(' ')[0])}>
+                        <span style={{color: 'red'}}>Default</span></Button>
+                    </div>
+    
+                    <div style={{margin: '0 15px'}}>
+                      <h3>Select Time End</h3>
+                      <TimePicker value={dayjs(`${pickedTimeEnd}`, 'HH:mm:ss')} format={'HH:mm'} 
+                        onChange={(e) => {setPickedTimeEnd((String(e['$d'])).split(' ')[4])
+                        }}/>
+                      <Button onClick={() => setPickedTimeEnd(currentTimeEnd.split(' ')[0])}>
+                        <span style={{color: 'red'}}>Default</span></Button>
+                    </div>
                 </div>
-
-                <div style={{margin: '0 15px'}}>
-                  <h3>Select Time End</h3>
-                  <TimePicker value={dayjs(`${pickedTimeEnd}`, 'HH:mm:ss')} format={'HH:mm'} 
-                    onChange={(e) => {setPickedTimeEnd((String(e['$d'])).split(' ')[4])
-                    }}/>
-                  <Button onClick={() => setPickedTimeEnd(currentTimeEnd.split(' ')[0])}>
-                    <span style={{color: 'red'}}>Default</span></Button>
-                </div>
-            </div>
-            )
-          }
-
-          <CustomButton
-            onClick={() => setIsConfirmModalOpen(true)}
-            type='primary'
-            >CONFIRM
-          </CustomButton>
-
-          <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} 
-            okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
-            <Result
-              title={'Editing Confirm'}
-              subTitle={'Please confirm editing new showtime with these detail'}
-              extra={
-                <div>
-                  <p>Showtime ID: {router.query._showID}</p>
-                  <p>Movie: <span style={{color: 'red'}}>{currentMovieName}</span> {`->`} {pickedMovie}</p>
-                  <p>Theater: <span style={{color: 'red'}}>{currentTheaterName}</span> {`->`} {pickedTheater}</p>
-                  <p>Date: <span style={{color: 'red'}}>{currentDate}</span> {`->`} {pickedDate}</p>
-                  <p>Time: <span style={{color: 'red'}}>{currentTimeStart?.split(' ')[0]} - {currentTimeEnd?.split(' ')[0]}</span> {`->`} {`${pickedTimeStart} - ${pickedTimeEnd}`}</p>
-                  <br/>
-                  <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
-                  <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
-                </div>
+                )
               }
-            />
-        </Modal>
-        <Modal centered title="" open={isStatusMordelOpen} onOk={onOkConfirmStatus} 
-          onCancel={() => {setIsStatusModalOpen(false)}} cancelButtonProps={{style: { display: 'none' }}} >
-          <Result
-            status={statusBox.status}
-            title={statusBox.title}
-            subTitle={statusBox.subTitle}
-          />
-        </Modal>
-          </Content>
-        </Layout>
-        <AppFooter/>
-      </Container>
-    )
-  )
+    
+              <CustomButton
+                onClick={() => setIsConfirmModalOpen(true)}
+                type='primary'
+                >CONFIRM
+              </CustomButton>
+    
+              {/* CONFIRM MODAL */}
+              <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} 
+                okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
+                <Result
+                  title={'Editing Confirm'}
+                  subTitle={'Please confirm editing new showtime with these detail'}
+                  extra={
+                    <div>
+                      <p>Showtime ID: {router.query._showID}</p>
+                      <p>Movie: <span style={{color: 'red'}}>{currentMovieName}</span> {`->`} {pickedMovie}</p>
+                      <p>Theater: <span style={{color: 'red'}}>{currentTheaterName}</span> {`->`} {pickedTheater}</p>
+                      <p>Date: <span style={{color: 'red'}}>{currentDate}</span> {`->`} {pickedDate}</p>
+                      <p>Time: <span style={{color: 'red'}}>{currentTimeStart?.split(' ')[0]} - {currentTimeEnd?.split(' ')[0]}</span> {`->`} {`${pickedTimeStart} - ${pickedTimeEnd}`}</p>
+                      <br/>
+                      <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
+                      <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
+                    </div>
+                  }
+                />
+              </Modal>
+    
+              {/* STATUS MODAL */}
+              <Modal centered title="" open={isStatusMordelOpen} onOk={onOkConfirmStatus} 
+                onCancel={() => {setIsStatusModalOpen(false)}} cancelButtonProps={{style: { display: 'none' }}} >
+                <Result
+                  status={statusBox.status}
+                  title={statusBox.title}
+                  subTitle={statusBox.subTitle}
+                />
+              </Modal>
+              </Content>
+            </Layout>
+            <AppFooter/>
+          </Container>
+        )
+      )
+    } else {
+      return(
+        <div>no data</div>
+      )
+    }
 }
 
+export default withAuth(editshowtime)

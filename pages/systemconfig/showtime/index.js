@@ -7,7 +7,7 @@ import { useQuery, gql, useLazyQuery } from '@apollo/client';
 import {Layout, Header, Content, headerStyle, 
   contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import { dayOfWeeks, months } from 'src/constants/datepicker';
+import withAuth from '@/src/middleware';
 
 const GET_SHOW_BY_DATE = gql`
   query GetShowtimeByDate($input: SearchInput) {
@@ -36,7 +36,7 @@ export const getServerSideProps = ({ req, res }) => {
       { props: {}}
 };
 
-export default function configShowtime({token}) {
+function configShowtime({token}) {
     const router = useRouter()
     const [getShowByDate ,{data, loading, error}] = useLazyQuery(GET_SHOW_BY_DATE)
 
@@ -99,10 +99,6 @@ export default function configShowtime({token}) {
       // console.log(showtimes[pickedShowIdx])
       router.push({pathname: `/systemconfig/showtime/addshowtime`})
     }
-
-    // if (data) console.log(data)
-    // if (loading) return <div>Loading...</div>;
-    // if (error) return `Error! ${error.message}`;
 
     return (
     <Container>
@@ -172,3 +168,4 @@ export default function configShowtime({token}) {
     )
 }
 
+export default withAuth(configShowtime);
