@@ -76,7 +76,7 @@ function addmovie({token}) {
 
     const onOkStatusModal = () => {
       setIsStatusModalOpen(false)
-      router.push('systemconfig/movie')
+      router.push('/systemconfig/movie')
     }
 
     return (

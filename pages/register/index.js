@@ -33,7 +33,7 @@ export default function register({token}) {
     const router = useRouter()
     useEffect(() => {
       if(token){
-        router.push('/')
+        router.push('/movies')
       }
     }, [])
 

@@ -9,8 +9,9 @@ export default function withAuth(Component) {
     const { role } = storedToken
 
     useEffect(() => {
+      console.log('middleware token' ,storedToken)
       if (role !== 'admin') {
-        router.push('/');
+        router.push('/movies');
       }
     }, [role, router]);
 

@@ -88,7 +88,7 @@ export default function login({token}) {
     const handleOk = () => {
       setIsModalOpen(false);
       if(statusBox.status === 'success'){
-        router.push('/')
+        router.push('/movies')
       }
         
     };

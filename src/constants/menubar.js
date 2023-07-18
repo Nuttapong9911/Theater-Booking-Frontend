@@ -1,12 +1,10 @@
 const menus = [
-    { key: "/", label: "HOME"},
     { key: "/movies", label: "MOVIE"},
     { key: "/buyticket", label: "BUY TICKET"},
     { key: "/refcode", label: "REF CODE"},
 ]
 
 const adminMenus = [
-    { key: "/", label: "HOME"},
     { key: "/movies", label: "MOVIE"},
     { key: "/buyticket", label: "BUY TICKET"},
     { key: "/refcode", label: "REF CODE"},
