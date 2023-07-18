@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 import { useQuery, gql, useMutation } from '@apollo/client';
-
-import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
+import {Layout, Content, contentStyle, Container} from 'src/styles/components'
 import { MenuBar, AppHeader, AppFooter } from '@/src/components/components';
 import { SUCCESS, FAILED } from '@/src/constants/configTheater/editTheater';
 import { allGenre } from '@/src/constants/movieGenres';
@@ -65,8 +64,10 @@ function editmovie({token}) {
 
     const {data: data_movie, loading: loading_movie, error: error_movie, refetch: refetch_movie} = useQuery(GET_MOVIE_BY_ID,{
       variables: { input: { _movieID: router.query._movieID } },
-      onCompleted: () => {
-        console.log('query completed')
+      onCompleted: (data) => {
+        if(data.getMovieByID === null) {
+          showPromiseConfirm()
+        }
       }
     })
 
@@ -164,6 +165,27 @@ function editmovie({token}) {
       router.push('/systemconfig/movie')
     }
 
+    const showPromiseConfirm = () => {
+      Modal.confirm({
+        title: 'Movie Not found!',
+        content: 'The movie is not found in database. It is may be deleted or there is may be an error occurs at the server.',
+        async onOk() {
+          try {
+            return await new Promise((resolve, reject) => {
+              setTimeout(resolve, 1000);
+            });
+          } catch {
+            return console.log('Oops errors!');
+          }
+        },
+        onCancel() {},
+      });
+    };
+
+
+
+    if (loading_movie) return <div>loading</div>;
+    if (error_movie) return <div>Error: {error_movie}</div>;
     return (
     <Container>
       <Layout>
@@ -175,92 +197,106 @@ function editmovie({token}) {
 
         <br/>
         <strong style={{fontSize:"250%"}}>EDIT MOVIE</strong>
-        <br/>   
-        <h4>movie ID: {router.query._movieID}</h4>
+        <br/>  
 
-        {/* Movie Poster */}
-        <Card
-          key={movieImage}
-          hoverable
-          style={{
-            width: 200,
-            height: 380,
-            margin: "auto"
-          }}
-          cover={<img alt={movieImage} src={movieImage} height="250" />}
-        >
-          {(movieName !== '' && genres.length > 0) && (
-            <Card.Meta title={movieName} description={genres.reduce((str, genre) => {return str += ` ${genre}`})} />
-          )}
-        </Card>
-        <br/> 
-
-        {/* Edit Movie Name */}
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Edit Movie Name</h2>
-          <Input type='text' size='medium' placeholder={movieName}
-            value={movieName}
-            onChange={(e) => {setMovieName(e.target.value)}}  />
-        </div>  
-
-        {/* Edit Movie Description */}
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Edit Movie Description</h2>
-          <Input.TextArea
-            showCount
-            maxLength={512}
-            style={{
-              height: 100,
-              marginBottom: 24,
-            }}
-            value={description}
-            onChange={(e) => {setDescription(e.target.value)}}
-            placeholder="movie description" 
-          />
-        </div> 
-
-        {/* Edit Movie Genres */}
-        <div style={{width: '40%', margin: 'auto'}}>
-            <h2>Edit Movie Genres</h2>
-            <Select
-              mode="multiple"
-              allowClear
+        <div style={{display:'flex', justifyContent:'space-evenly'}}>
+      
+          {/* Column left */}
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'auto', marginBottom: 'auto'}}>
+            {/* Movie Poster */}
+            <Card
+              key={movieImage}
+              hoverable
               style={{
-                width: '100%',
+                width: 250,
+                height: 500,
               }}
-              placeholder='Select Movie Genres'
-              
-              value={genres}
-              onChange={(value) => {setGenres(value)}}
-              options={allGenre.map((genre) => {return {label: genre, value: genre}})}
-            />
+              cover={<img alt={movieImage} src={movieImage} height={350} />}
+            >
+              {(movieName !== '' && genres.length > 0) && (
+                <div>
+                  <p style={{fontWeight: "700", fontSize:  "15px"}}>{movieName}</p>
+                  <Card.Meta description={<span style={{fontSize: "12px"}}>
+                    {genres.reduce((str, genre) => {return str += ` ${genre}`})}
+                  </span>}/>
+                </div>
+              )}
+            </Card>
+
+            <div>movie ID: {router.query._movieID}</div>
+          </div>
+          
+
+          {/* Column right */}
+          <div style={{width: '45%', maxWidth: '50%'}}>
+            {/* Edit Movie Name */}
+            <div style={{padding:"0px 0px 30px 0px"}}>
+              <h4>Edit <span style={{fontWeight: '700'}}>Name</span></h4>
+              <Input type='text' size='medium' placeholder={movieName}
+                value={movieName}
+                onChange={(e) => {setMovieName(e.target.value)}}  />
+            </div> 
+
+            {/* Edit Movie Description */}
+            <div style={{padding:"0px 0px 30px 0px"}}>
+              <h4>Edit <span style={{fontWeight: '700'}}>Description</span></h4>
+              <Input.TextArea
+                showCount
+                maxLength={512}
+                style={{
+                  height: 100,
+                  marginBottom: 24,
+                }}
+                value={description}
+                onChange={(e) => {setDescription(e.target.value)}}
+                placeholder="movie description" 
+              />
+            </div> 
+
+            {/* Edit Movie Genres */}
+            <div style={{padding:"0px 0px 30px 0px"}}>
+                <h4>Edit <span style={{fontWeight: '700'}}>Genres</span></h4>
+                <Select
+                  mode="multiple"
+                  allowClear
+                  style={{
+                    width: '100%',
+                  }}
+                  placeholder='Select Movie Genres'
+                  
+                  value={genres}
+                  onChange={(value) => {setGenres(value)}}
+                  options={allGenre.map((genre) => {return {label: genre, value: genre}})}
+                />
+            </div>
+            
+            {/* Edit Movie Duration */}
+            <div style={{padding:"0px 0px 30px 0px"}}>
+              <h4>Edit <span style={{fontWeight: '700'}}>Duration</span></h4>
+              <Input type='number' size='medium' placeholder={movieDuration}
+                value={movieDuration}
+                onChange={(e) => {setMovieDuration(e.target.value)}}  />
+            </div>  
+
+            {/* Edit Movie Image */}
+            <div style={{padding:"0px 0px 30px 0px"}}>
+              <h4>Edit <span style={{fontWeight: '700'}}>Image Link</span></h4>
+              <Input type='text' size='medium' placeholder={movieImage}
+                value={movieImage}
+                onChange={(e) => {setMovieImage(e.target.value)}}  />
+            </div>  
+          </div>
+          
         </div>
-        
-        {/* Edit Movie Duration */}
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Edit Movie Duration</h2>
-          <Input type='number' size='medium' placeholder={movieDuration}
-            value={movieDuration}
-            onChange={(e) => {setMovieDuration(e.target.value)}}  />
-        </div>  
 
-        {/* Edit Movie Image */}
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Edit Movie Image Link</h2>
-          <Input type='text' size='medium' placeholder={movieImage}
-            value={movieImage}
-            onChange={(e) => {setMovieImage(e.target.value)}}  />
-        </div>  
-        
-
-        <Button 
+        <Button style={{width:"20%", margin: "0px 30px"}}
           onClick={() => setIsConfirmDeleteModalOpen(true)} type='primary' danger>
           DELETE  Movie
         </Button>
 
-        <Button 
+        <Button style={{width:"20%", margin: "0px 30px"}}
           onClick={() => setIsConfirmEditModalOpen(true)} type='primary'>
-          EDIT Movie
+          CONFIRM EDITING
         </Button>
 
         {/* Confirm Modal */}
@@ -271,14 +307,14 @@ function editmovie({token}) {
                 subTitle={'Please confirm editing movie with these detail'}
                 extra={
                   <div>
-                    <p>Movie ID: {router.query._movieID}</p>
-                    <p>Name: {movieName}</p>
-                    <p>Description: {description}</p>
+                    <p><span style={{fontWeight:'700'}}>Movie ID: </span>{router.query._movieID}</p>
+                    <p><span style={{fontWeight:'700'}}>Name: </span>{movieName}</p>
+                    <p><span style={{fontWeight:'700'}}>Description: </span>{description}</p>
                     {(genres.length > 0) && (
-                      <p>Genres: {genres.reduce((str, genre) => {return str += ', '+ genre})}</p>
+                    <p><span style={{fontWeight:'700'}}>Genres: </span>{genres.reduce((str, genre) => {return str += ', '+ genre})}</p>
                     )}
-                    <p>Duration: {movieDuration}</p>
-                    <p>Image Link: {movieImage}</p>
+                    <p><span style={{fontWeight:'700'}}>Duration: </span>{movieDuration}</p>
+                    <p><span style={{fontWeight:'700'}}>Image Link: </span>{movieImage}</p>
                     <br/>
                     <Button onClick={() => {setIsConfirmEditModalOpen(false)}} >CANCLE</Button>
                     <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
@@ -297,8 +333,8 @@ function editmovie({token}) {
                 subTitle='Please confirm deleting movie with these detail'
                 extra={
                   <div>
-                    <p>Movie ID: {router.query._movieID}</p>
-                    <p>Movie Name: {movieName}</p>
+                    <p><span style={{fontWeight:'700'}}>Movie ID: </span>{router.query._movieID}</p>
+                    <p><span style={{fontWeight:'700'}}>Movie Name: </span>{movieName}</p>
                     <br/>
                     <Button onClick={() => {setIsConfirmDeleteModalOpen(false)}} >CANCLE</Button>
                     <Button onClick={() => {onClickConfirmDelete()}} type='primary'>CONFIRM</Button>

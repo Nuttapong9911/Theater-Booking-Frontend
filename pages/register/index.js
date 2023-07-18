@@ -1,14 +1,11 @@
 import {Modal, Result} from 'antd'
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
-import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import { SUCCESS, FAILED} from 'src/constants/register'
-
 import React, {useEffect, useState} from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
-
 import { useMutation, gql } from '@apollo/client';
+import {Layout, Content, contentStyle, CustomButton, CustomInput, Container} from 'src/styles/components.js'
+import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
+import { SUCCESS, FAILED} from 'src/constants/register'
 
 const REGISTER = gql`
   mutation Mutation($input: RegisterInput!) {

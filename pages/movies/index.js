@@ -1,13 +1,10 @@
-import { Card, Space } from 'antd';
-import {Layout, Content, contentStyle, Container} from 'src/styles/components'
+import { Card, Row, Col } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react'
 import { getCookie } from 'cookies-next';
-
-import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-
-
 import { useQuery, gql } from '@apollo/client';
+import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
+import {Layout, Content, contentStyle, Container} from 'src/styles/components'
 
 const GET_ALL_MOVIES = gql`
   query GetAllMovie {
@@ -70,35 +67,46 @@ const moviesPage = ({token}) => {
         >      
 
         <br/>
-        <strong style={{fontSize:"250%"}}>All Movies</strong>
+        <strong style={{fontSize:"250%"}}>MOVIES</strong>
         <br/>
-          {
+
+        <div className='movielist' style={{display: 'flex', margin: "0px auto" }}>
+        {
             (data) ?
             (
-              <Space  wrap>
+              // <Space  wrap>
+              <Row justify="left">
               {
                 data.getAllMovie.data.map((item, index) => {
-                  return <Card
-                          key={index}
-                          hoverable
-                          style={{
-                            width: 200,
-                            height: 380,
-                            margin: "20px"
-                          }}
-                          cover={<img alt={item._movieID} src={item.movie_image} height="250" />}
-                          onClick={onClickMovie}
-                        >
-                          <Meta title={item.movie_name} description={item.genres.reduce((str, genre) => {return str += ` ${genre}`})}  />
-                        </Card>
+                  return <Col sx={24} sm={24} md={12} xl={6} xxl={4} style={{display: 'flex', justifyContent: 'center'}}> 
+                    <Card
+                      key={index}
+                      hoverable
+                      style={{
+                        width: 200,
+                        height: 420,
+                        margin: "20px"
+                      }}
+                      cover={<img alt={item._movieID} src={item.movie_image} height="250" />}
+                      onClick={onClickMovie}
+                      >
+                      <p style={{fontWeight: "700", fontSize:  "15px"}}>{item.movie_name}</p>
+                      <Meta description={<span style={{fontSize: "12px"}}>
+                        {item.genres.reduce((str, genre) => {return str += ` ${genre}`})}
+                      </span>}/>
+                    </Card> 
+                  </Col>
                 })
               }
-              </Space>
+              </Row>
+              // </Space>
             ): 
             (
-              <div>movie detail</div>
+              <div>no data</div>
             )
           }
+        </div>
+          
           
         </Content>
       </Layout>

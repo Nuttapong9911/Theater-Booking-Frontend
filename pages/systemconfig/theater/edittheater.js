@@ -1,10 +1,9 @@
-import { Cascader, Button, Modal, Result, Input, Select } from 'antd';
+import { Button, Modal, Result, Input } from 'antd';
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 import { useQuery, gql, useMutation } from '@apollo/client';
-
-import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
+import { Layout, Content, contentStyle, Container } from 'src/styles/components'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { SUCCESS, FAILED } from '@/src/constants/configTheater/editTheater';
 
@@ -61,7 +60,7 @@ export default function edittheater({token}) {
     const [isStatusMordelOpen, setIsStatusModalOpen] = useState(false);
     const [statusBox, setStatusBox] = useState({})
 
-    const {data: data_theater, data: loading_theater, error: error_theater, refetch: refetch_theater} = useQuery(GET_THEATER_BY_ID,{
+    const {data: data_theater, loading: loading_theater, error: error_theater, refetch: refetch_theater} = useQuery(GET_THEATER_BY_ID,{
       variables: {
         input: {
           _theaterID: router.query._theaterID
@@ -170,20 +169,18 @@ export default function edittheater({token}) {
 
         <br/>
         <strong style={{fontSize:"250%"}}>EDIT THEATER</strong>
-        <br/>   
-        <h4>theater ID: {router.query._theaterID}</h4>
         <br/> 
         <br/> 
 
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Edit Theater Name</h2>
+        <div style={{width: '35%', margin: 'auto', paddingBottom: "30px"}}>
+          <h4>Edit <span style={{fontWeight: '700'}}>Name</span></h4>
           <Input type='text' size='medium' placeholder={theaterName}
             value={theaterName}
             onChange={(e) => {setTheaterName(e.target.value)}}  />
         </div>  
 
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Edit Theater Description</h2>
+        <div style={{width: '60%', margin: 'auto', paddingBottom: "30px"}}>
+          <h4>Edit <span style={{fontWeight: '700'}}>Description</span></h4>
           <Input.TextArea
             showCount
             maxLength={512}
@@ -197,15 +194,18 @@ export default function edittheater({token}) {
           />
         </div> 
 
-        <Button 
+        <Button style={{width:"20%", margin: "0px 30px"}}
           onClick={() => setIsConfirmDeleteModalOpen(true)} type='primary' danger>
           DELETE THEATER
         </Button>
 
-        <Button 
+        <Button style={{width:"20%", margin: "0px 30px"}}
           onClick={() => setIsConfirmEditModalOpen(true)} type='primary'>
-          EDIT THEATER
+          CONFIRM EDITING
         </Button>
+
+        <br/> 
+        <br/> 
 
         <Modal centered title="" open={isConfirmEditModalOpen} onCancel={() => {setIsConfirmEditModalOpen(false)}} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
@@ -213,12 +213,12 @@ export default function edittheater({token}) {
                 subTitle={'Please confirm editing theatre with these detail'}
                 extra={
                   <div>
-                    <p>Theater ID: {router.query._theaterID}</p>
-                    <p>Theater Name: {theaterName}</p>
-                    <p>Theater Description: {description}</p>
+                    <p><span style={{fontWeight:'700'}}>Theater ID: </span>{router.query._theaterID}</p>
+                    <p><span style={{fontWeight:'700'}}>Theater Name: </span>{theaterName}</p>
+                    <p><span style={{fontWeight:'700'}}>Theater Description: </span>{description}</p>
                     <br/>
-                    <Button onClick={() => {setIsConfirmEditModalOpen(false)}} >CANCLE</Button>
-                    <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {setIsConfirmEditModalOpen(false)}} >CANCLE</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
                   </div>
                 }
             />
@@ -237,8 +237,8 @@ export default function edittheater({token}) {
                     <p>Theater Name: {theaterName}</p>
                     <p>Theater Description: {description}</p>
                     <br/>
-                    <Button onClick={() => {setIsConfirmDeleteModalOpen(false)}} >CANCLE</Button>
-                    <Button onClick={() => {onClickConfirmDelete()}} type='primary'>CONFIRM</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {setIsConfirmDeleteModalOpen(false)}} >CANCLE</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {onClickConfirmDelete()}} type='primary'>CONFIRM</Button>
                   </div>
                 }
             />

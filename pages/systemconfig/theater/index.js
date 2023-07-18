@@ -1,11 +1,9 @@
 import { Button, Cascader } from 'antd';
-import { useQuery, gql, useLazyQuery } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 import React, {useEffect, useState} from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
-
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
+import {Layout, Content, contentStyle, Container} from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 
 const GET_ALL_THEATER = gql`
@@ -75,30 +73,32 @@ export default function configTheater({token}) {
           >     
 
           <br/>
-          <strong style={{fontSize:"250%"}}>SELECT THEATER TO BE EDIT</strong>
-          <br/>  
+          <strong style={{fontSize:"250%"}}>THEATER CONFIG</strong>
+          <br/>
+          <br/>
 
-          <div>
-            <h2>Select Theater</h2>
-            <Cascader onChange={(value) => {setPickedTheaterID(value[0])}} placeholder='select movie' 
+          <div style={{paddingBottom: "30px", margin: "0px 30px"}}>
+            <h3>Select Theater</h3>
+            <Cascader onChange={(value) => {setPickedTheaterID(value[0])}} placeholder='select theater' 
               value={pickedTheaterID}
               options={allTheater?.map(({_id, theater_name}) => {return {value: _id, label: theater_name}})}
               />
           </div>
 
-          <Button style={{width:"20%"}}  
+          <Button style={{width:"25%", margin: "0px 30px"}}  
             onClick={() => {router.push(`/systemconfig/theater/addtheater`)}}>
             CREATE NEW THEATER
           </Button>
 
-          <Button style={{width:"20%"}} disabled={ pickedTheaterID === "" } 
+          <Button style={{width:"25%"}} disabled={ pickedTheaterID === "" } 
             onClick={onClickConfirm}
             type='primary'
             >
             CONFIRM
           </Button>
-
-            
+          
+          <br/>
+          <br/>
           </Content>
         </Layout>
         <AppFooter/>

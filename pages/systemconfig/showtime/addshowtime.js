@@ -3,10 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 import { useQuery, gql, useMutation } from '@apollo/client';
-
-import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
+import {Layout, Content,  contentStyle, Container} from 'src/styles/components'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import { dayOfWeeks, months } from 'src/constants/datepicker';
 import { SUCCESS, FAILED } from '@/src/constants/configShowtime/createShowtime';
 import withAuth from '@/src/middleware';
 
@@ -168,71 +166,79 @@ function addShowtime({token}) {
 
         <br/>
         <strong style={{fontSize:"250%"}}>CREATE NEW SHOWTIME</strong>
-        <br/>   
+        <br/> 
+        <br/>  
+
+        {/* Select Date */}
+        <div style={{paddingBottom: "30px"}}>
+          <h4>Select <span style={{fontWeight: '700'}}>Date</span></h4>
+          <Radio.Group onChange={(e) => setPickedDateIdx(e.target.value)} >
+          {
+            week.map((day, index) => {
+              return (
+                <Radio.Button key={index} value={index}>{day.dateLabel}</Radio.Button>
+              )
+            })
+          }
+          </Radio.Group>
+        </div> 
 
         {/* Select Movie */}
-        <div>
-          <h2>Select Movie</h2>
+        <div style={{paddingBottom: "30px"}}>
+          <h4>Select <span style={{fontWeight: '700'}}>Movie</span></h4>
             <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
-              value={pickedMovie}
-              options={movieNames.map((moviename) => {return {value: moviename, label: moviename}})}
-            />
+            value={pickedMovie}
+            options={movieNames.map((moviename) => {return {value: moviename, label: moviename}})}
+          />
         </div>
 
         {/* Select Theater */}
-        <div>
-          <h2>Select Theater</h2>
+        <div style={{paddingBottom: "30px"}}>
+          <h4>Select <span style={{fontWeight: '700'}}>Theater</span></h4>
             <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Theater' 
-              value={pickedTheater}
-              options={theaterNames.map((theaterName) => {return {value: theaterName, label: theaterName}})}
-            />
+            value={pickedTheater}
+            options={theaterNames.map((theaterName) => {return {value: theaterName, label: theaterName}})}
+          />
         </div>
 
-        {/* Select Date */}
-        <div>
-          <h2>Select Date</h2>
-          <Radio.Group onChange={(e) => setPickedDateIdx(e.target.value)} >
-            {
-              week.map((day, index) => {
-                return (
-                  <Radio.Button key={index} value={index}>{day.dateLabel}</Radio.Button>
-                )
-              })
-            }
-          </Radio.Group>
-        </div> 
+        
         
         {/* Select Time */}
-        <div style={{display: 'flex' ,justifyContent: 'center'}}>
+        <div style={{display: "flex" ,justifyContent: "center", paddingBottom: "30px"}}>
           {contextHolder}
           <div style={{margin: '0 15px'}}>
-            <h3>Select Time Start</h3>
-            <TimePicker format={'HH:mm'} value={pickedTimeStart} onChange={onChangeTimeStart}/>
+          <h5>Select <span style={{fontWeight: '700'}}>Time Start</span></h5>            
+          <TimePicker format={'HH:mm'} value={pickedTimeStart} onChange={onChangeTimeStart}/>
           </div>
 
           <div style={{margin: '0 15px'}}>
-            <h3>Select Time End</h3>
+            <h5>Select <span style={{fontWeight: '700'}}>Time End</span></h5>           
             <TimePicker format={'HH:mm'} value={pickedTimeEnd} onChange={(e) => setPickedTimeEnd(e)}/>
           </div>
         </div>
 
         {/* BUTTON CREATE NEW ST */}
         <Button onClick={() => {setIsConfirmModalOpen(true)}} 
+          type='primary'
           disabled={pickedDateIdx < 0 || pickedMovie === "" || pickedTheater === "" || 
             pickedTimeStart === "" || pickedTimeEnd === ""} > 
           CREATE NEW SHOWTIME</Button>
 
+        <br/>
+        <br/>
+
         {/* CONFIRM MODAL */}
-        <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
+        <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} 
+          okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
                 title={'Creating Confirm'}
                 subTitle={'Please confirm creating new showtime with these detail'}
                 extra={
                   <div>
-                    <p>Movie: {pickedMovie}</p>
-                    <p>Theater: {pickedTheater}</p>
-                    <p>Date: {week[pickedDateIdx]?.dateLabel}</p>
-                    <p>Time: {`${pickedTimeStart['$d']?.toString().split(' ')[4]} - ${pickedTimeEnd['$d']?.toString().split(' ')[4]}`}</p>
+                    <p><span style={{fontWeight:'700'}}>Movie: </span>{pickedMovie}</p>
+                    <p><span style={{fontWeight:'700'}}>Theater: </span>{pickedTheater}</p>
+                    <p><span style={{fontWeight:'700'}}>Date: </span>{week[pickedDateIdx]?.dateLabel}</p>
+                    <p><span style={{fontWeight:'700'}}>Time: </span>{`${pickedTimeStart['$d']?.toString().split(' ')[4]} - ${pickedTimeEnd['$d']?.toString().split(' ')[4]}`}</p>
                     <br/>
                     <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
                     <Button onClick={() => {onClickConfirmCreate()}} type='primary'>CONFIRM</Button>

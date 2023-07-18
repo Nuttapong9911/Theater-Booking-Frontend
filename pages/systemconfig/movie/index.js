@@ -3,9 +3,7 @@ import { useQuery, gql } from '@apollo/client';
 import React, {useState, useEffect} from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
-
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
+import {Layout, Content, contentStyle, Container} from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import withAuth from '@/src/middleware';
 
@@ -73,6 +71,8 @@ function configMovie({token}) {
       }
     }
 
+    if (loading) return <div>loading</div>
+    if (error) return <div>Error: {error}</div>
     return (
     <Container>
       <Layout>
@@ -84,28 +84,32 @@ function configMovie({token}) {
         >     
 
         <br/>
-        <strong style={{fontSize:"250%"}}>SELECT MOVIE TO BE EDIT</strong>
-        <br/>  
+        <strong style={{fontSize:"300%"}}>MOVIE CONFIG</strong>
+        <br/>
+        <br/> 
 
         {/* Select Movie */}
         <div>
-          <h2>Select Movie</h2>
+          <h3>Select Movie to be edited</h3>
           <Cascader onChange={(value) => setPickedMovieID(value[0])} placeholder='select movie' 
-            value={pickedMovieID}
+            value={pickedMovieID} style={{width: '40%'}}
             options={allMovie?.map(({movie_name, _movieID}) => {return {value: _movieID, label: movie_name}})}
             />
         </div>
-
-        <Button style={{width:"20%"}}  
+      
+        <Button style={{width:"20%", margin: "0px 30px"}}  
           onClick={() => {router.push(`/systemconfig/movie/addmovie`)}}>
           CREATE NEW MOVIE
         </Button>
 
-        <Button style={{width:"20%"}} disabled={pickedMovieID === ""} 
+        <Button style={{width:"20%", margin: "0px 30px"}} disabled={pickedMovieID === ""} 
           type='primary'
           onClick={onClickConfirm}>
           CONFIRM
         </Button>
+
+        <br/> 
+        <br/> 
 
         </Content>
       </Layout>

@@ -55,7 +55,7 @@ const MenuBar = (props) => {
 
     const handleOk = (e) => {
       setIsModalOpen(false);
-      deleteCookie('THEATER_SEAT_BOOKING_COOKIE')
+      deleteCookie('THEATER_SEAT_BOOKING_COOKIE') 
       router.reload()
     };
 
@@ -77,7 +77,7 @@ const MenuBar = (props) => {
           { (data?.decodeToken) ? 
             (
             
-            <div style={{display: 'flex', justifyContent:'space-between'}}>
+            <div style={{display: 'flex', justifyContent:'space-between', backgroundColor: "white"}}>
               
               {
                 (data.decodeToken.role === 'customer') ? 
@@ -147,9 +147,9 @@ const AppHeader = () => {
         <Header style={headerStyle}>
           <div style={{ padding:'50px 0'}} >
             <div>
-              <h1 style={{fontSize: "40px"}}>THiNKMOVIE</h1>
-              <h2>เว็บจองตั๋วหนังออนไลน์</h2>
-              <span>Online Theater Seat Booking</span>
+              <h1 style={{fontSize: "50px", fontWeight: "700", fontStyle: 'italic'}}>THiNKMOVIE</h1>
+              <h3>เว็บจองตั๋วหนังออนไลน์</h3>
+              <span>ONLINE THEATER SEAT BOOKING</span>
             </div>
           </div>
         </Header>

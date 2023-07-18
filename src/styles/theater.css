@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,800&display=swap');
 
 @import url("https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css");
 
@@ -16,10 +16,10 @@
 }
 
 
-/* * {
+* {
 	font-family: "Montserrat", sans-serif !important;
     box-sizing: border-box;
-} */
+}
 
 
 .movie-container {
@@ -141,7 +141,7 @@ p.text span {
 
 p.movie-name {
     font-size: xx-large;
-    font-weight: bolder;
+    font-weight: "700";
     line-height: 150%;
 }
 
@@ -177,3 +177,8 @@ p.order-booking span {
     font-weight: bold;
 }
 
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

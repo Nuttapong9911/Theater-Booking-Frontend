@@ -1,14 +1,11 @@
 import {Modal, Result} from 'antd'
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
-import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import { SUCCESS, FAILED } from 'src/constants/login';
-
 import React, {useEffect, useState} from 'react'
 import { useRouter } from 'next/router'
 import { setCookie, getCookie } from 'cookies-next';
-
 import { useMutation, gql } from '@apollo/client';
+import {Layout, Content, contentStyle, CustomButton, CustomInput, Container} from 'src/styles/components.js'
+import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
+import { SUCCESS, FAILED } from 'src/constants/login';
 
 export const getServerSideProps = ({ req, res }) => {
   const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
@@ -35,7 +32,7 @@ export default function login({token}) {
     const router = useRouter()
     useEffect(() => {
       if(token){
-        router.push('/')
+        router.push('/movies')
       }
     }, [])
 
@@ -109,6 +106,7 @@ export default function login({token}) {
         <br/>
         <strong style={{fontSize:"250%"}}>LOGIN</strong>
         <br/> 
+        <br/> 
 
         <Modal centered title="" open={isModalOpen} onOk={handleOk} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
@@ -120,7 +118,7 @@ export default function login({token}) {
 
         <div style={{width: "30%", margin:"auto"}}>
             <h3 style={{margin: "0 0 0 0"}}>Username</h3>
-            <CustomInput type='email' size="large" placeholder="username | email" value={username} onChange={onUsernameChange}/>
+            <CustomInput type='email' size="large" placeholder="email" value={username} onChange={onUsernameChange}/>
         </div> 
 
         <div style={{width: "30%", margin:"auto"}}>
@@ -130,6 +128,9 @@ export default function login({token}) {
 
         <CustomButton  onClick={onClickLogin}  
          type='primary' >LOGIN</CustomButton>
+        
+        <br/> 
+        <br/> 
 
           
         </Content>

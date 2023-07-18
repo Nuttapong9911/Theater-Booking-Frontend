@@ -4,11 +4,8 @@ import React, {useEffect, useState} from 'react'
 import { getCookie } from 'cookies-next';
 import { useRouter } from 'next/router'
 import { useQuery, gql, useMutation } from '@apollo/client';
-
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
+import { Layout,  Content, contentStyle, CustomButton, Container } from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import { dayOfWeeks, months } from 'src/constants/datepicker';
 import { SUCCESS, FAILED } from '@/src/constants/configShowtime/editShowtime';
 import withAuth from '@/src/middleware';
 
@@ -221,11 +218,12 @@ function editshowtime({token}) {
               > 
               <br/>
               <strong style={{fontSize:"250%"}}>SHOWTIME EDITING</strong>
-              <br/>     
+              <br/>
+              <br/>    
     
               {/* Time Picker */}
-              <div>
-                  <h2>Edit Date</h2>
+              <div style={{paddingBottom: "30px"}}>
+                  <h4>Edit <span style={{fontWeight: '700'}}>Date</span></h4>
                   <Radio.Group onChange={(e) => setPickedDate(e.target.value)}>
                     {
                       week.map((day, index) => {
@@ -242,23 +240,23 @@ function editshowtime({token}) {
               </div> 
     
               {/* Edit Movie */}
-              <div>
-                <h2>Edit Movie</h2>
-                  <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
-                    value={pickedMovie}
-                    options={movieNames.map((moviename) => {
-                      if(moviename === currentMovieName){
-                        return {value: moviename, label: <span style={{color:'red'}}>{moviename} (default)</span>}
-                      }else{
-                        return {value: moviename, label: moviename}
-                      }
-                    })}
-                  />
+              <div style={{paddingBottom: "30px"}}>
+                <h4>Edit <span style={{fontWeight: '700'}}>Movie</span></h4>
+                <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
+                  value={pickedMovie}
+                  options={movieNames.map((moviename) => {
+                    if(moviename === currentMovieName){
+                      return {value: moviename, label: <span style={{color:'red'}}>{moviename} (default)</span>}
+                    }else{
+                      return {value: moviename, label: moviename}
+                    }
+                  })}
+                />
               </div>
     
               {/* Edit Theater  */}
-              <div>
-                <h2>Edit Theater</h2>
+              <div style={{paddingBottom: "30px"}}>
+                <h4>Edit <span style={{fontWeight: '700'}}>Theater</span></h4>
                   <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Movie' 
                     value={pickedTheater}
                     options={theaterNames.map((theatername) => {
@@ -274,9 +272,9 @@ function editshowtime({token}) {
               {/* Edit Time */}
               {(pickedTimeStart && pickedTimeEnd) && 
                 (
-                  <div style={{display: 'flex' ,justifyContent: 'center'}}>
+                  <div style={{display: 'flex' ,justifyContent: 'center', paddingBottom: "30px"}}>
                     <div style={{margin: '0 15px'}}>
-                      <h3>Select Time Start</h3>
+                      <h5>Edit <span style={{fontWeight: '700'}}>Time Start</span></h5>
                       <TimePicker value={dayjs(`${pickedTimeStart}`, 'HH:mm:ss')} format={'HH:mm'} 
                         onChange={(e) => {setPickedTimeStart((String(e['$d'])).split(' ')[4])
                         }}/>
@@ -285,7 +283,7 @@ function editshowtime({token}) {
                     </div>
     
                     <div style={{margin: '0 15px'}}>
-                      <h3>Select Time End</h3>
+                      <h5>Edit <span style={{fontWeight: '700'}}>Time End</span></h5>
                       <TimePicker value={dayjs(`${pickedTimeEnd}`, 'HH:mm:ss')} format={'HH:mm'} 
                         onChange={(e) => {setPickedTimeEnd((String(e['$d'])).split(' ')[4])
                         }}/>
@@ -299,8 +297,11 @@ function editshowtime({token}) {
               <CustomButton
                 onClick={() => setIsConfirmModalOpen(true)}
                 type='primary'
-                >CONFIRM
+                >CONFIRM EDITING
               </CustomButton>
+
+              <br/>
+              <br/>
     
               {/* CONFIRM MODAL */}
               <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} 
@@ -310,11 +311,11 @@ function editshowtime({token}) {
                   subTitle={'Please confirm editing new showtime with these detail'}
                   extra={
                     <div>
-                      <p>Showtime ID: {router.query._showID}</p>
-                      <p>Movie: <span style={{color: 'red'}}>{currentMovieName}</span> {`->`} {pickedMovie}</p>
-                      <p>Theater: <span style={{color: 'red'}}>{currentTheaterName}</span> {`->`} {pickedTheater}</p>
-                      <p>Date: <span style={{color: 'red'}}>{currentDate}</span> {`->`} {pickedDate}</p>
-                      <p>Time: <span style={{color: 'red'}}>{currentTimeStart?.split(' ')[0]} - {currentTimeEnd?.split(' ')[0]}</span> {`->`} {`${pickedTimeStart} - ${pickedTimeEnd}`}</p>
+                      <p><span style={{fontWeight:'700'}}>Showtime ID: </span>{router.query._showID}</p>
+                      <p><span style={{fontWeight:'700'}}>Movie: </span><span style={{color: 'red'}}>{currentMovieName}</span> {`->`} {pickedMovie}</p>
+                      <p><span style={{fontWeight:'700'}}>Theater: </span><span style={{color: 'red'}}>{currentTheaterName}</span> {`->`} {pickedTheater}</p>
+                      <p><span style={{fontWeight:'700'}}>Date: </span><span style={{color: 'red'}}>{currentDate}</span> {`->`} {pickedDate}</p>
+                      <p><span style={{fontWeight:'700'}}>Time: </span><span style={{color: 'red'}}>{currentTimeStart?.split(' ')[0]} - {currentTimeEnd?.split(' ')[0]}</span> {`->`} {`${pickedTimeStart} - ${pickedTimeEnd}`}</p>
                       <br/>
                       <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
                       <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>

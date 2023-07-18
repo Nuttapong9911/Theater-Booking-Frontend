@@ -1,11 +1,9 @@
 import { Radio, Cascader, Button } from 'antd';
-import React, {useEffect, useState} from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
-import { useQuery, gql, useLazyQuery } from '@apollo/client';
-
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
+import { gql, useLazyQuery } from '@apollo/client';
+import { Layout, Content, contentStyle, Container } from 'src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import withAuth from '@/src/middleware';
 
@@ -110,12 +108,13 @@ function configShowtime({token}) {
           style={contentStyle}
         > 
         <br/>
-        <strong style={{fontSize:"250%"}}>SELECT SHOWTIME TO BE EDIT</strong>
-        <br/>     
+        <strong style={{fontSize:"250%"}}>SHOWTIME CONFIG</strong>
+        <br/>
+        <br/>
 
         {/* Select Date */}
-        <div>
-            <h2>Select Date</h2>
+        <div style={{paddingBottom: "30px"}}>
+            <h3>Select Date</h3>
             <Radio.Group onChange={onDateChange} defaultValue={pickedDateIdx}>
               {
                 week.map((day, index) => {
@@ -127,8 +126,8 @@ function configShowtime({token}) {
             </Radio.Group>
         </div> 
 
-        <div>
-          <h2>Select Movie</h2>
+        <div style={{paddingBottom: "30px"}}>
+          <h3>Select Movie</h3>
           <Cascader onChange={onMovieChange} placeholder='select movie' disabled={pickedDateIdx < 0} 
             value={pickedMovie}
             options={movienames.map((moviename) => {return {value: moviename, label: moviename}})}
@@ -136,10 +135,11 @@ function configShowtime({token}) {
         </div>
 
         {/* Select Time and Theater */}
-        <div>
-          <h2>Select Time and Theater</h2>
+        <div style={{paddingBottom: "30px"}}>
+          <h3>Select Time and Theater</h3>
           <Cascader onChange={(value) => setPickedShowIdx(value)} placeholder='select Time and Theater'  
             value={pickedShowIdx}
+            style={{ width:"25%" }}
             options={showtimes.map((showtime, index) => {
               return {value: index, label:
                 `${(new Date(showtime.datetime_start)).toLocaleTimeString('en-US', {hour12: false ,timeZone: 'Asia/Bangkok'})} - 
@@ -150,16 +150,20 @@ function configShowtime({token}) {
           />
         </div>
 
-        <Button style={{width:"20%"}}  
+        <Button style={{width:"25%", margin: "0px 30px"}}  
           onClick={onClickCreateNew}>
           CREATE NEW SHOWTIME
         </Button>
 
-        <Button style={{width:"20%"}} disabled={pickedShowIdx === ""} 
+        <Button style={{width:"20%", margin: "0px 30px"}} 
+          disabled={pickedShowIdx === ""} 
           type='primary'
           onClick={onClickConfirm}>
           CONFIRM
         </Button>
+
+        <br/> 
+        <br/> 
 
         </Content>
       </Layout>

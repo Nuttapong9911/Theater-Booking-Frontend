@@ -1,10 +1,9 @@
-import { Cascader, Button, Modal, Result, Input, Select } from 'antd';
+import { Button, Modal, Result, Input } from 'antd';
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
-import { useQuery, gql, useMutation } from '@apollo/client';
-
-import {Layout, Header, Content, headerStyle, contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components'
+import { gql, useMutation } from '@apollo/client';
+import { Layout, Content, contentStyle, Container } from 'src/styles/components'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import { SUCCESS, FAILED } from '@/src/constants/configTheater/addTheater';
 
@@ -29,7 +28,7 @@ export const getServerSideProps = ({ req, res }) => {
 export default function addtheater({token}) {
     const router = useRouter()
 
-    const [theaterName, setTheaterName] = useState('')
+    const [theaterName, setTheaterName] = useState('THEATER ')
     const [theaterDescription, setTheaterDescription] = useState('')
 
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -80,16 +79,17 @@ export default function addtheater({token}) {
 
         <br/>
         <strong style={{fontSize:"250%"}}>CREATE NEW THEATER</strong>
+        <br/>
         <br/>   
 
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Theater Name</h2>
+        <div style={{width: '40%', margin: 'auto', paddingBottom: "30px"}}>
+          <h4><span style={{fontWeight: '700'}}>Theater Name</span></h4>            
           <Input value={theaterName} type='text' size='medium' placeholder='theater name' 
             onChange={(e) => {setTheaterName(e.target.value)}}  />
         </div>        
 
-        <div style={{width: '40%', margin: 'auto'}}>
-          <h2>Theater Description</h2>
+        <div style={{width: '40%', margin: 'auto' , paddingBottom: "30px"}}>
+          <h4><span style={{fontWeight: '700'}}>Theater Description</span></h4>            
           <Input.TextArea
             showCount
             maxLength={512}
@@ -108,6 +108,9 @@ export default function addtheater({token}) {
           CREATE NEW THEATER
         </Button>
 
+        <br/>
+        <br/>
+
         <Modal centered title="" open={isConfirmModalOpen} onCancel={() => {setIsConfirmModalOpen(false)}} 
           okButtonProps={{style: {display: "none"}}} cancelButtonProps={{style: { display: 'none' }}} >
           <Result
@@ -115,11 +118,11 @@ export default function addtheater({token}) {
                 subTitle={'Please confirm creating new theater with these detail'}
                 extra={
                   <div>
-                    <p>Theater Name: {theaterName}</p>
-                    <p>Theater Description: {theaterDescription}</p>
+                    <p><span style={{fontWeight:'700'}}>Theater Name: </span>{theaterName}</p>
+                    <p><span style={{fontWeight:'700'}}>Description: </span>{theaterDescription}</p>
                     <br/>
-                    <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
-                    <Button onClick={() => {onClickConfirmCreate()}} type='primary'>CONFIRM</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {onClickConfirmCreate()}} type='primary'>CONFIRM</Button>
                   </div>
                 }
             />
@@ -135,7 +138,6 @@ export default function addtheater({token}) {
                   <div>
                     <p>Theater Name: {theaterName}</p>
                     <p>Theater Description: {theaterDescription}</p>
-                    <br/>
                   </div>
                 }
             />

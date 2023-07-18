@@ -1,13 +1,9 @@
-import { Breadcrumb, Menu, theme, Card, Radio, Cascader } from 'antd';
-import {Layout, Header, Content, headerStyle, 
-  contentStyle, CustomButton, CustomInput, Container, Footer} from 'src/styles/components.js'
-import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import { dayOfWeeks, months } from 'src/constants/datepicker';
-
-import React, {useEffect, useState} from 'react'
+import { Radio, Cascader, Button } from 'antd';
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
-
-import { useQuery, gql, useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery } from '@apollo/client';
+import {Layout, Content, contentStyle, Container} from '@/src/styles/components.js'
+import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 
 const GET_SHOW_BY_DATE = gql`
   query GetShowtimeByDate($input: SearchInput) {
@@ -90,34 +86,38 @@ export default function buyticket() {
         > 
         <br/>
         <strong style={{fontSize:"250%"}}>THEATER SEAT SEARCHING</strong>
+        <br/> 
         <br/>     
 
-        <div>
-            <h2>Select Date</h2>
-            <Radio.Group onChange={onDateChange} defaultValue={pickedDateIdx}>
-              {
-                week.map((day, index) => {
-                  return (
-                    <Radio.Button key={index} value={index}>{day.dateLabel}</Radio.Button>
-                  )
-                })
-              }
-            </Radio.Group>
+        {/* Select Date */}
+        <div style={{paddingBottom: "30px"}}>
+          <h3>Select Date</h3>
+          <Radio.Group onChange={onDateChange} defaultValue={pickedDateIdx}>
+            {
+              week.map((day, index) => {
+                return (
+                  <Radio.Button key={index} value={index}>{day.dateLabel}</Radio.Button>
+                )
+              })
+            }
+          </Radio.Group>
         </div> 
 
-        <div>
-          <h2>Select Movie</h2>
+        {/* Select Movie */}
+        <div style={{paddingBottom: "30px"}}>
+          <h3>Select Movie</h3>
           <Cascader onChange={onMovieChange} placeholder='select movie' disabled={pickedDateIdx < 0} 
             value={pickedMovie}
             options={movienames.map((moviename) => {return {value: moviename, label: moviename}})}
-            />
+          />
         </div>
 
         {/* Select Time and Theater */}
-        <div>
-          <h2>Select Time and Theater</h2>
+        <div style={{paddingBottom: "30px"}}>
+          <h3>Select Time and Theater</h3>
           <Cascader onChange={(value) => setPickedShowIdx(value)} placeholder='select Time and Theater'  
             value={pickedShowIdx}
+            style={{ width:"25%" }}
             options={showtimes.map((showtime, index) => {
               return {value: index, label:
                 `${(new Date(showtime.datetime_start)).toLocaleTimeString('en-US', {hour12: false ,timeZone: 'Asia/Bangkok'})} - 
@@ -128,10 +128,14 @@ export default function buyticket() {
           />
         </div>
 
-        <CustomButton disabled={pickedShowIdx === ""} 
+        <Button disabled={pickedShowIdx === ""} 
           type='primary'
+          style={{width: "20%"}}
           onClick={onClickConfirm}
-          >CONFIRM</CustomButton>
+          >CONFIRM</Button>
+
+        <br/> 
+        <br/> 
 
         </Content>
       </Layout>
