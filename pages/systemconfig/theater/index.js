@@ -31,7 +31,7 @@ export default function configTheater({token}) {
     const [pickedTheaterID, setPickedTheaterID] = useState("")      //name
     const [allTheater, setAllTheater] = useState([])
 
-    const {data, loading, error, refetch} = useQuery(GET_ALL_THEATER)
+    const {data, loading, error} = useQuery(GET_ALL_THEATER, { fetchPolicy: 'network-only' })
 
     // store fetched data
     useEffect(() => {
@@ -39,19 +39,6 @@ export default function configTheater({token}) {
         setAllTheater(data.getAllTheater.data);
       }
     }, [data]);
-
-    // refetch data everytime routing to this page
-    useEffect(() => {
-      const handleRouteChange = () => {
-        if (router.pathname === '/systemconfig/theater'){
-          refetch()
-        }
-      }
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
-      }
-    }, [router.pathname, refetch])
 
     const onClickConfirm = () => {
       router.push({

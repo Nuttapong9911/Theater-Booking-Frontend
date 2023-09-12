@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 import { gql, useLazyQuery } from '@apollo/client';
-import { Layout, Content, contentStyle, Container } from 'src/styles/components.js'
+import { Layout, Content, contentStyle, Container } from '@/src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
 import withAuth from '@/src/middleware';
 

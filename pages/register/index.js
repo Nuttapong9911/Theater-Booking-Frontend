@@ -1,5 +1,6 @@
 import {Modal, Result} from 'antd'
 import React, {useEffect, useState} from 'react'
+import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import { getCookie } from 'cookies-next';
 import { useMutation, gql } from '@apollo/client';
@@ -28,11 +29,12 @@ export const getServerSideProps = ({ req, res }) => {
 
 export default function register({token}) {
     const router = useRouter()
+    const storedToken = useSelector((state) => state.token.value)
     useEffect(() => {
-      if(token){
+      if(storedToken.user_id !== ''){
         router.push('/movies')
       }
-    }, [])
+    }, [storedToken])
 
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
@@ -104,7 +106,7 @@ export default function register({token}) {
     <Container>
       <Layout>
         <AppHeader/>
-        <MenuBar router={router}/>
+        <MenuBar router={router} token={token}/>
         
         <Content
           style={contentStyle}
@@ -133,7 +135,7 @@ export default function register({token}) {
 
         <div style={{width: "30%", margin:"auto"}}>
             <h3 style={{margin: "0 0 0 0"}}>Username</h3>
-            <CustomInput type='email' size="large" placeholder="username | email" value={username} onChange={onUsernameChange}/>
+            <CustomInput type='email' size="large" placeholder="email" value={username} onChange={onUsernameChange}/>
         </div> 
 
         <div style={{width: "30%", margin:"auto"}}>

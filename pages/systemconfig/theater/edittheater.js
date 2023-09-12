@@ -60,12 +60,13 @@ export default function edittheater({token}) {
     const [isStatusMordelOpen, setIsStatusModalOpen] = useState(false);
     const [statusBox, setStatusBox] = useState({})
 
-    const {data: data_theater, loading: loading_theater, error: error_theater, refetch: refetch_theater} = useQuery(GET_THEATER_BY_ID,{
+    const {data: data_theater, loading: loading_theater, error: error_theater} = useQuery(GET_THEATER_BY_ID,{
       variables: {
         input: {
           _theaterID: router.query._theaterID
         }
-      }
+      },
+      fetchPolicy: 'network-only'
     })
 
     // store fetched data
@@ -77,19 +78,6 @@ export default function edittheater({token}) {
         }
       }
     }, [data_theater]);
-
-    // refetch data everytime routing to this page
-    useEffect(() => {
-      const handleRouteChange = () => {
-        if (router.pathname === '/systemconfig/theater/edittheater'){
-          refetch_theater()
-        }
-      }
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
-      }
-    }, [router.pathname, refetch_theater])
 
     const [editTheaterByID, {data_e, loading_e, error_e}] = useMutation(EDIT_THEATER_BY_ID, {
       onCompleted: (res) => {

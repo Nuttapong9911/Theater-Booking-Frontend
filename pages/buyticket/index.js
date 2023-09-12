@@ -1,6 +1,7 @@
 import { Radio, Cascader, Button } from 'antd';
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
+import { getCookie } from 'cookies-next';
 import { gql, useLazyQuery } from '@apollo/client';
 import {Layout, Content, contentStyle, Container} from '@/src/styles/components.js'
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
@@ -22,7 +23,17 @@ const GET_SHOW_BY_DATE = gql`
 }
 `;
 
-export default function buyticket() {
+export const getServerSideProps = ({ req, res }) => {
+  const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
+  return (token) ? 
+      {
+        props: {token : JSON.parse(JSON.stringify(token))} 
+      }:
+      { props: {}}
+      
+};
+
+export default function buyticket({token}) {
     const router = useRouter()
     const [getShowByDate ,{data, loading, error}] = useLazyQuery(GET_SHOW_BY_DATE)
 
@@ -79,7 +90,7 @@ export default function buyticket() {
     <Container>
       <Layout>
         <AppHeader/>
-        <MenuBar router={router}/>
+        <MenuBar router={router} token={token} />
         
         <Content
           style={contentStyle}

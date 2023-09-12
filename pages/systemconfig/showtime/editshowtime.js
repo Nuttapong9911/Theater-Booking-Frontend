@@ -92,14 +92,19 @@ function editshowtime({token}) {
     const [isStatusMordelOpen, setIsStatusModalOpen] = useState(false);
     const [statusBox, setStatusBox] = useState({})    
 
-    const {data: data_movies, loading: loading_movies, error: error_movies, refetch: refetch_movies} = useQuery(GET_ALL_MOVIE)
-    const {data: data_theaters, loading: loading_theaters, error: error_theaters, refetch: refetch_theaters} = useQuery(GET_ALL_THEATER)
-    const {data: data_show, loading: loading_show, error: error_show, refetch: refetch_show} = useQuery(GET_SHOW_BY_ID, {
+    const {data: data_movies, loading: loading_movies, error: error_movies} = useQuery(GET_ALL_MOVIE, {
+      fetchPolicy: 'network-only'
+    })
+    const {data: data_theaters, loading: loading_theaters, error: error_theaters} = useQuery(GET_ALL_THEATER, {
+      fetchPolicy: 'network-only'
+    })
+    const {data: data_show, loading: loading_show, error: error_show} = useQuery(GET_SHOW_BY_ID, {
       variables: {
         input: {
           _showID: router.query._showID
         }
-      }
+      },
+      fetchPolicy: 'network-only'
     })
 
     const [editShowtime, {data: data_edit, loading: loading_edit, error: error_edit}] = useMutation(EDIT_SHOWTIME_BY_ID, {
@@ -143,21 +148,6 @@ function editshowtime({token}) {
         setPickedTimeEnd(dateEnd.toTimeString().split(' ')[0])
       }
     }, [data_movies, data_theaters, data_show]);
-
-    // refetch data everytime routing to this page
-    useEffect(() => {
-      const handleRouteChange = () => { 
-        if (router.pathname === '/systemconfig/showtime/editshowtime'){
-          refetch_movies()
-          refetch_theaters()
-          refetch_show()
-        }
-      }
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
-      }
-    }, [router.pathname, refetch_movies, refetch_theaters, refetch_theaters])
 
     // date pickers part
     // - create 7 days onward for Radio.group
@@ -257,7 +247,7 @@ function editshowtime({token}) {
               {/* Edit Theater  */}
               <div style={{paddingBottom: "30px"}}>
                 <h4>Edit <span style={{fontWeight: '700'}}>Theater</span></h4>
-                  <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Movie' 
+                  <Cascader onChange={(value) => setPickedTheater(value[0])}  placeholder='Select Theater' 
                     value={pickedTheater}
                     options={theaterNames.map((theatername) => {
                       if(theatername === currentTheaterName){
@@ -317,8 +307,8 @@ function editshowtime({token}) {
                       <p><span style={{fontWeight:'700'}}>Date: </span><span style={{color: 'red'}}>{currentDate}</span> {`->`} {pickedDate}</p>
                       <p><span style={{fontWeight:'700'}}>Time: </span><span style={{color: 'red'}}>{currentTimeStart?.split(' ')[0]} - {currentTimeEnd?.split(' ')[0]}</span> {`->`} {`${pickedTimeStart} - ${pickedTimeEnd}`}</p>
                       <br/>
-                      <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
-                      <Button onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
+                      <Button style={{margin: "0px 10px"}} onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
+                      <Button style={{margin: "0px 10px"}} onClick={() => {onClickConfirmEdit()}} type='primary'>CONFIRM</Button>
                     </div>
                   }
                 />

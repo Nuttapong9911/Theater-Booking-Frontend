@@ -60,6 +60,7 @@ function addShowtime({token}) {
     const [theaterNames, setTheaterNames] = useState([])
     const [pickedDateIdx, setPickedDateIdx] = useState(-1)
     const [pickedMovie, setPickedMovie] = useState("")
+    const [pickedMovieDuration, setPickedMovieDuration] = useState(0)
     const [pickedTheater, setPickedTheater] = useState("")
     const [pickedTimeStart, setPickedTimeStart] = useState("")
     const [pickedTimeEnd, setPickedTimeEnd] = useState("")
@@ -67,9 +68,13 @@ function addShowtime({token}) {
     const [isStatusMordelOpen, setIsStatusModalOpen] = useState(false);
     const [statusBox, setStatusBox] = useState({})
 
-    const {data: data_movies, loading: loading_movies, error: error_movies, refetch: refetch_movies} = useQuery(GET_ALL_MOVIE)
+    const {data: data_movies, loading: loading_movies, error: error_movies} = useQuery(GET_ALL_MOVIE, {
+      fetchPolicy: 'network-only'
+    })
 
-    const {data: data_theater, loading: loading_theater, error: error_theater, refetch: refetch_theater} = useQuery(GET_ALL_THEATER)
+    const {data: data_theater, loading: loading_theater, error: error_theater} = useQuery(GET_ALL_THEATER, {
+      fetchPolicy: 'network-only'
+    })
 
     // store fetched data
     useEffect(() => {
@@ -80,20 +85,6 @@ function addShowtime({token}) {
         setTheaterNames(data_theater.getAllTheater.data.map((theater) => {return theater.theater_name}))
       }
     }, [data_movies, data_theater]);
-
-    // refetch data everytime routing to this page
-    useEffect(() => {
-      const handleRouteChange = () => {
-        if (router.pathname === '/systemconfig/theater/addshowtime'){
-          refetch_movies()
-          refetch_theater()
-        }
-      }
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
-      }
-    }, [router.pathname, refetch_movies, refetch_theater])
 
     const [createShowtime, {data: data_create, loading: loading_create, error: error_create}] = useMutation(CREATE_SHOWTIME, {
       onCompleted: (data) => {
@@ -119,6 +110,13 @@ function addShowtime({token}) {
         dateObj: day,
         dateLabel: `${day.toDateString()}`
       })
+    }
+
+    const onChangePickedMovie = (value) => {
+      if (value) {
+        setPickedMovie(value[0])
+        setPickedMovieDuration(data_movies.getAllMovie.data.filter((movie) => { return movie.movie_name === value[0] })[0].movie_duration)
+      }
     }
 
     const onClickConfirmCreate = () => {
@@ -186,10 +184,13 @@ function addShowtime({token}) {
         {/* Select Movie */}
         <div style={{paddingBottom: "30px"}}>
           <h4>Select <span style={{fontWeight: '700'}}>Movie</span></h4>
-            <Cascader onChange={(value) => setPickedMovie(value[0])}  placeholder='Select Movie' 
+            <Cascader onChange={onChangePickedMovie}  placeholder='Select Movie' 
             value={pickedMovie}
             options={movieNames.map((moviename) => {return {value: moviename, label: moviename}})}
-          />
+            />
+            { (pickedMovie !== "") && (
+              <div>duration: {pickedMovieDuration} mins</div> 
+            )}
         </div>
 
         {/* Select Theater */}
@@ -240,8 +241,8 @@ function addShowtime({token}) {
                     <p><span style={{fontWeight:'700'}}>Date: </span>{week[pickedDateIdx]?.dateLabel}</p>
                     <p><span style={{fontWeight:'700'}}>Time: </span>{`${pickedTimeStart['$d']?.toString().split(' ')[4]} - ${pickedTimeEnd['$d']?.toString().split(' ')[4]}`}</p>
                     <br/>
-                    <Button onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
-                    <Button onClick={() => {onClickConfirmCreate()}} type='primary'>CONFIRM</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {setIsConfirmModalOpen(false)}} >CANCLE</Button>
+                    <Button style={{margin: "0px 10px"}} onClick={() => {onClickConfirmCreate()}} type='primary'>CONFIRM</Button>
                   </div>
                 }
             />

@@ -62,8 +62,9 @@ function editmovie({token}) {
     const [isStatusMordelOpen, setIsStatusModalOpen] = useState(false)
     const [statusBox, setStatusBox] = useState({})
 
-    const {data: data_movie, loading: loading_movie, error: error_movie, refetch: refetch_movie} = useQuery(GET_MOVIE_BY_ID,{
+    const {data: data_movie, loading: loading_movie, error: error_movie} = useQuery(GET_MOVIE_BY_ID,{
       variables: { input: { _movieID: router.query._movieID } },
+      fetchPolicy: 'network-only',
       onCompleted: (data) => {
         if(data.getMovieByID === null) {
           showPromiseConfirm()
@@ -75,7 +76,6 @@ function editmovie({token}) {
     useEffect(() => {
       if (data_movie) {
         if(data_movie.getMovieByID){
-          console.log(data_movie.getMovieByID)
           setMovieName(data_movie.getMovieByID.movie_name)
           setDescription(data_movie.getMovieByID.description)
           setGenres(data_movie.getMovieByID.genres)
@@ -84,20 +84,6 @@ function editmovie({token}) {
         }
       }
     }, [data_movie]);
-
-    // refetch data everytime routing to this page
-    useEffect(() => {
-      const handleRouteChange = () => {
-        if (router.pathname === '/systemconfig/movie/editmovie'){
-          refetch_movie()
-        }
-      }
-      router.events.on('routeChangeComplete', handleRouteChange)
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
-      }
-
-    }, [router.pathname, refetch_movie])
 
     const [editMovieByID, {data_e, loading_e, error_e}] = useMutation(EDIT_MOVIE_BY_ID, {
       onCompleted: (res) => {
@@ -262,7 +248,7 @@ function editmovie({token}) {
                   style={{
                     width: '100%',
                   }}
-                  placeholder='Select Movie Genres'
+                  placeholder='movie genres'
                   
                   value={genres}
                   onChange={(value) => {setGenres(value)}}

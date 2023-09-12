@@ -1,5 +1,6 @@
 import {Modal, Result} from 'antd'
 import React, {useEffect, useState} from 'react'
+import { useSelector } from 'react-redux'
 import { useRouter } from 'next/router'
 import { setCookie, getCookie } from 'cookies-next';
 import { useMutation, gql } from '@apollo/client';
@@ -9,7 +10,6 @@ import { SUCCESS, FAILED } from 'src/constants/login';
 
 export const getServerSideProps = ({ req, res }) => {
   const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
-
   return (token) ? 
       {
         props: {token : JSON.parse(JSON.stringify(token))} 
@@ -30,11 +30,12 @@ const LOGIN = gql`
 
 export default function login({token}) {
     const router = useRouter()
+    const storedToken = useSelector((state) => state.token.value)
     useEffect(() => {
-      if(token){
+      if(storedToken.user_id !== ''){
         router.push('/movies')
       }
-    }, [])
+    }, [storedToken])
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -48,20 +49,22 @@ export default function login({token}) {
 
     const [login, {data, loading, error}] = useMutation(LOGIN, {
       onCompleted: (data) => {
-        setStatusBox(data?.login.httpCode === '200' ? 
-          {
+        if (data?.login.httpCode === '200') {
+          setStatusBox({
             status: SUCCESS.STATUS,
             title: SUCCESS.TITLE,
             subtitle: SUCCESS.SUBTITLE
-          }:
-          {
+          })
+          setCookie('THEATER_SEAT_BOOKING_COOKIE' ,data?.login.token, {maxAge:120 * 60})
+        }else {
+          setStatusBox({
             status: FAILED.STATUS,
             title: FAILED.TITLE,
             subtitle: `${FAILED.SUBTITLE} ${data?.login.message}`
-          }
-        )
+          })
+        }
         setIsModalOpen(true)
-        setCookie('THEATER_SEAT_BOOKING_COOKIE' ,data?.login.token, {maxAge: 120 * 60})
+        
       }
     })
 
@@ -97,7 +100,7 @@ export default function login({token}) {
     <Container>
       <Layout>
         <AppHeader/>
-        <MenuBar router={router}/>
+        <MenuBar router={router} token={token}/>
         
         <Content
           style={contentStyle}

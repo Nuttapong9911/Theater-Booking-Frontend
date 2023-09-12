@@ -24,7 +24,6 @@ const GET_ALL_MOVIE = gql`
 
 export const getServerSideProps = ({ req, res }) => {
   const token = getCookie('THEATER_SEAT_BOOKING_COOKIE',{ req, res })
-  console.log(token, 'serversideprops form movie/index')
   return (token) ? 
       {
         props: {token : JSON.parse(JSON.stringify(token))} 
@@ -38,7 +37,9 @@ function configMovie({token}) {
     const [pickedMovieID, setPickedMovieID] = useState("")      //name
     const [allMovie, setAllMovie] = useState([])
 
-    const {data, loading, error, refetch} = useQuery(GET_ALL_MOVIE)
+    const {data, loading, error} = useQuery(GET_ALL_MOVIE, {
+      fetchPolicy: 'network-only'
+    })
 
     // store fetched data
     useEffect(() => {
@@ -46,21 +47,6 @@ function configMovie({token}) {
         setAllMovie(data.getAllMovie.data)
       }
     }, [data]);
-
-    // refetch data everytime routing to this page
-    useEffect(() => {
-      const handleRouteChange = () => {
-        if (router.pathname === '/systemconfig/movie'){
-          refetch()
-        }
-      }
-
-      router.events.on('routeChangeComplete', handleRouteChange)
-
-      return () => {
-        router.events.off('routeChangeComplete', handleRouteChange)
-      }
-    }, [router.pathname, refetch])
 
     const onClickConfirm = () => {
       if(pickedMovieID !== ""){

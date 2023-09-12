@@ -33,8 +33,9 @@ export default function movieDetail({token}) {
 
   const [ movie, setMovie ] = useState({})
 
-  const {data, loading, error, refetch} = useQuery(GET_MOVIE_BY_ID, {
-    variables: {input: {_movieID: router.query._movieID}}
+  const {data, loading, error} = useQuery(GET_MOVIE_BY_ID, {
+    variables: {input: {_movieID: router.query._movieID}},
+    fetchPolicy: 'network-only'
   })
 
   // store fetched data
@@ -43,20 +44,6 @@ export default function movieDetail({token}) {
       setMovie(data.getMovieByID)
     }
   }, [data]);
-
-
-  // refetch data everytime routing to this page
-  useEffect(() => {
-    const handleRouteChange = () => {
-      if (router.pathname === `/movies/${router.query._movieID}`){
-        refetch()
-      }
-    }
-    router.events.on('routeChangeComplete', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.pathname, refetch])
 
   if (loading) return <div>Loading...</div>;
   if (error) return `Error! ${error}`;

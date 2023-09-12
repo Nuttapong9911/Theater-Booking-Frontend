@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { getCookie } from 'cookies-next';
 import { useQuery, gql } from '@apollo/client';
 import { MenuBar, AppHeader, AppFooter } from 'src/components/components';
-import {Layout, Content, contentStyle, Container} from 'src/styles/components'
+import { Layout, Content, contentStyle, Container } from 'src/styles/components'
 
 const GET_ALL_MOVIES = gql`
   query GetAllMovie {
@@ -33,20 +33,11 @@ export const getServerSideProps = ({ req, res }) => {
 const moviesPage = ({token}) => {
   const router = useRouter()
 
-  const {data, loading, error, refetch} = useQuery(GET_ALL_MOVIES)
-
-  // refetch data everytime routing to this page
-  useEffect(() => {
-    const handleRouteChange = () => {
-      if (router.pathname === '/movies'){
-        refetch()
-      }
+  const {data, loading, error} = useQuery(GET_ALL_MOVIES, 
+    {
+      fetchPolicy: 'network-only'
     }
-    router.events.on('routeChangeComplete', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.pathname, refetch])
+  )
 
   const { Meta } = Card;
 

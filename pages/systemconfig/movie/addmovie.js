@@ -122,7 +122,7 @@ function addmovie({token}) {
             <div style={{padding:"30px 0px 30px 0px"}}>
               <h5><span style={{fontWeight: '700'}}>Status</span></h5>
 
-              <Cascader value={movieStatus} type='text' placeholder='movie name' 
+              <Cascader value={movieStatus} type='text' placeholder='movie status' 
                 onChange={(value) => {setMovieStatus(value[0])}}  
                 options={['ACTIVE','INACTIVE', 'CANCLED'].map((e) => {return {label: e, value: e}})}
                 />

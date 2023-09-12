@@ -45,5 +45,5 @@ export  {
     CustomButton,
     Container,
     Title,
-    Radio
+    Radio,
 }

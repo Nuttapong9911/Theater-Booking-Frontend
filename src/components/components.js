@@ -3,7 +3,6 @@ import { Menu, Modal, Result} from 'antd';
 import { deleteCookie } from 'cookies-next';
 import { useDispatch, useSelector } from 'react-redux'
 import { useQuery, gql } from '@apollo/client';
-
 import {Header, headerStyle, Footer} from '../styles/components'
 import { menus, loginregister, adminMenus } from '../constants/menubar'
 import { SUCCESS, FAILED } from '../constants/logout';
@@ -24,19 +23,37 @@ const MenuBar = (props) => {
 
     const dispatch = useDispatch()
     const storeToken = useCallback((token) => dispatch({ type: "SETTOKEN", token: token }),[dispatch])
-    
+    const storedToken = useSelector((state) => state.token.value)
+
     const {data, loading, error} = useQuery(DECODE_TOKEN, {
       variables: {
         token: props.token
       },
       onCompleted: (data) => {
         if(data.decodeToken){
-          storeToken({
-            user_id: data.decodeToken.user_id, 
-            firstname: data.decodeToken.firstname, 
-            lastname: data.decodeToken.lastname,
-            role: data.decodeToken.role
-          })
+            console.log('data.decodetoken', data.decodeToken.user_id)
+            console.log('storedToken', storedToken.user_id)
+            storeToken({
+              user_id: data.decodeToken.user_id, 
+              firstname: data.decodeToken.firstname, 
+              lastname: data.decodeToken.lastname,
+              role: data.decodeToken.role
+            })
+        }else {
+          if(props.token) {
+            console.log('token exist but verify failed')
+            console.log('token at component', props.token)
+            deleteCookie('THEATER_SEAT_BOOKING_COOKIE')
+            storeToken({
+              user_id: '', 
+              firstname: '', 
+              lastname: '',
+              role: ''
+            })
+            console.log('clear store completely')
+          }else {
+            console.log('no token and verify failed')
+          }
         }
       }
     })
@@ -55,7 +72,13 @@ const MenuBar = (props) => {
 
     const handleOk = (e) => {
       setIsModalOpen(false);
-      deleteCookie('THEATER_SEAT_BOOKING_COOKIE') 
+      deleteCookie('THEATER_SEAT_BOOKING_COOKIE')
+      storeToken({
+        user_id: '', 
+        firstname: '', 
+        lastname: '',
+        role: ''
+      })
       router.reload()
     };
 
